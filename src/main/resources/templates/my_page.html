@@ -1,11 +1,50 @@
 <!--資料P113-->
 <!DOCTYPE html>
-<htmlxmlns:th="http://www.thymeleaf.org">
-<head>
-<meta charset="UTF-8">
-<title>Insert title here</title>
-</head>
-<body>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org" 
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
+<head>
+	<meta charset="UTF-8">
+	<title>マイページ - フリマアプリ</title>
+	<link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+
+<body>
+	<div class="container">
+
+		<h1>マイページ</h1>
+		<p>ようこそ、<span th:text="${user.name}"></span>さん！</p>
+
+<!-- ナビゲーション -->
+		<div class="main-nav">
+			<!-- 出品管理 -->
+			<a th:href="@{/my-page/selling}" class="button">出品管理</a>
+			<!-- 購入履歴 -->
+			<a th:href="@{/my-page/orders}" class="button">購入履歴</a>
+			<!-- 販売履歴 -->
+			<a th:href="@{/my-page/sales}" class="button">販売履歴</a>
+			<!-- お気に入り -->
+			<a th:href="@{/my-page/favorites}" class="button">お気に入り</a>
+			<!-- 自分が送信した評価一覧 -->
+			<a th:href="@{/my-page/reviews}" class="button">自分の評価</a>
+			<!-- 商品一覧へ戻る -->
+			<a th:href="@{/items}" class="button secondary">商品一覧に戻る</a>
+			<!-- ログアウト -->
+			<form th:action="@{/logout}" method="post" style="display:inline;">
+				<button type="submit" class="button danger">ログアウト</button>
+			</form>
+		</div>
+		
+<!-- アカウント情報 -->
+		<h2>アカウント情報</h2>
+		<!-- 名前 -->
+		<p><strong>名前:</strong> <span th:text="${user.name}"></span></p>
+		<!-- メール -->
+		<p><strong>メールアドレス:</strong> <span th:text="${user.email}"></span></p>
+		<!-- role(不要かも) -->
+		<p><strong>役割:</strong> <span th:text="${user.role}"></span></p>
+	</div>
 </body>
+
 </html>

@@ -1,11 +1,100 @@
 <!--資料P106-->
 <!DOCTYPE html>
-<htmlxmlns:th="http://www.thymeleaf.org">
-<head>
-<meta charset="UTF-8">
-<title>Insert title here</title>
-</head>
-<body>
+<!-- ルート要素。言語=日本語、Thymeleaf の名前空間を宣言 -->
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
 
+<head>
+	<meta charset="UTF-8">
+	<title>商品一覧 - フリマアプリ</title>
+	<link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+
+<body>
+	<div class="container">
+		
+		<h1>商品一覧</h1>
+<!-- ナビゲーション -->
+		<div class="main-nav">
+			<a th:href="@{/items/new}" class="button">商品を出品する</a>
+			<a th:href="@{/my-page}" class="button">マイページ</a>
+			<form th:action="@{/logout}" method="post" style="display:inline;">
+				<button type="submit" class="button secondary">ログアウト</button>
+			</form>
+		</div>
+<!-- 検索 -->
+		<form th:action="@{/items}" method="get" class="filter-form">
+			<!-- キーワード検索 -->
+			<div>
+				<label for="keyword">キーワード:</label>
+				<!-- 直近の検索値を保持して入力欄に反映 -->
+				<input type="text" id="keyword" name="keyword" 
+						th:value="${param.keyword}">
+			</div>
+			<!-- カテゴリ選択 -->
+			<div>
+				<label for="categoryId">カテゴリ:</label>
+				<!-- 全カテゴリを表示 -->
+				<select id="categoryId" name="categoryId">
+					<option value="">全て</option>
+					<option th:each="category : ${categories}" 
+							th:value="${category.id}" th:text="${category.name}"
+						th:selected="${param.categoryId == category.id}"></option>
+				</select>
+			</div>
+			<!-- 検索実行ボタン -->
+			<button type="submit" class="button">検索</button>
+		</form>
+<!-- 商品一覧 -->
+		<div class="item-grid">
+			<div class="item-card" th:each="item : ${items.content}">
+
+				<a th:href="@{/items/{id}(id=${item.id})}">
+					<!-- 画像 なければプレースホルダ -->
+					<img th:src="${item.imageUrl != null ? item.imageUrl :'/images/placeholder.png'}" 
+						alt="商品画像">
+					<!-- 商品名 -->
+					<h3 th:text="${item.name}"></h3>
+					<!-- 価格 -->
+					<p class="price" 
+						th:text="'¥' + ${#numbers.formatDecimal(item.price, 0, 'COMMA', 0, 'POINT')}">
+					</p>
+					<!-- ステータス -->
+					<p class="status" th:text="${item.status}"></p>
+				</a>
+			</div>
+			<!-- 検索結果0件の場合 -->
+			<div th:if="${#lists.isEmpty(items.content)}">
+				<p>商品が見つかりませんでした。</p>
+			</div>
+		</div>
+<!-- ページネーション（前へ/ページ番号/次へ） -->
+		<div class="pagination">
+			<!-- 前ページが存在する場合のみリンク表示 -->
+			<a th:if="${items.hasPrevious()}" 
+				th:href="@{/items(page=${items.number - 1}, 
+						keyword=${param.keyword}, categoryId=${param.categoryId})}">
+				前へ
+			</a>
+			<!-- 0〜(総ページ-1)のシーケンスを生成してページ番号リンクを作成 -->
+			<span th:each="i : ${#numbers.sequence(0, items.totalPages - 1)}">
+				<!-- 現在ページ以外はリンクとして表示 -->
+				<a th:if="${i != items.number}" 
+					th:href="@{/items(page=${i}, keyword=${param.keyword}, 
+							categoryId=${param.categoryId})}" 
+					th:text="${i + 1}"></a>
+				<!-- 現在ページは強調表示（リンクではない） -->
+				<span th:if="${i == items.number}" class="current-page" th:text="${i +1}"></span>
+			</span>
+			<!-- 次ページが存在する場合のみリンク表示 -->
+			<a th:if="${items.hasNext()}" 
+				th:href="@{/items(page=${items.number + 1}, 
+						keyword=${param.keyword}, 
+						categoryId=${param.categoryId})}">
+				次へ
+			</a>
+		</div>
+	</div>
 </body>
+
 </html>

@@ -1,11 +1,74 @@
 <!--資料P122-->
 <!DOCTYPE html>
-<htmlxmlns:th="http://www.thymeleaf.org">
-<head>
-<meta charset="UTF-8">
-<title>Insert title here</title>
-</head>
-<body>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org" 
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
+<head>
+	<meta charset="UTF-8">
+	<title>出品管理 - フリマアプリ</title>
+	<link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+
+<body>
+	<div class="container">
+
+		<h1>出品管理</h1>
+		<p>あなたが出品した商品の一覧です。</p>
+		
+<!-- ナビゲーション -->
+		<div class="main-nav">
+			<!-- 新規出品 -->
+			<a th:href="@{/items/new}" class="button">新しい商品を出品する</a>
+			<!-- マイページに戻る -->
+			<a th:href="@{/my-page}" class="button secondary">マイページに戻る</a>
+		</div>
+		
+<!-- 出品中アイテム -->
+		<div class="item-grid">
+			<div class="item-card" th:each="item : ${sellingItems}">
+				
+				<!-- 商品詳細へのリンクでカード全体を囲む -->
+				<a th:href="@{/items/{id}(id=${item.id})}">
+					<!-- 商品画像（なければプレースホルダ） -->
+					<img 
+						th:src="${item.imageUrl != null ? 
+								item.imageUrl : '/images/placeholder.png'}" 
+						alt="商品画像">
+					<!-- 商品名 -->
+					<h3 th:text="${item.name}"></h3>
+					<!-- 価格 -->
+					<p 
+						class="price" 
+						th:text="'¥' + ${#numbers.formatDecimal(
+									item.price, 0, 'COMMA', 0, 'POINT')}"></p>
+					<!-- 出品ステータス -->
+					<p class="status" th:text="${item.status}"></p>
+				</a>
+				<!-- 操作ボタン -->
+				<div class="button-group">
+					<!-- 編集 -->
+					<a th:href="@{/items/{id}/edit(id=${item.id})}" class="button secondary">
+						編集</a>
+					<!-- 削除 -->
+					<form th:action="@{/items/{id}/delete(id=${item.id})}" 
+						method="post" style="display:inline;">
+						<!-- 確認ダイアログ付きの削除ボタン -->
+						<button 
+							type="submit" 
+							class="button danger" 
+							onclick="return confirm('本当にこの商品を削除しますか？');">
+								削除
+						</button>
+					</form>
+				</div>
+			</div>
+			<!-- 出品が 0 件のときの表示 -->
+			<div th:if="${#lists.isEmpty(sellingItems)}">
+				<p>出品中の商品はありません。</p>
+			</div>
+		</div>
+	</div>
 </body>
+
 </html>
