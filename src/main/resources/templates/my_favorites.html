@@ -1,11 +1,49 @@
 <!--資料P111-->
 <!DOCTYPE html>
-<htmlxmlns:th="http://www.thymeleaf.org">
-<head>
-<meta charset="UTF-8">
-<title>Insert title here</title>
-</head>
-<body>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org" 
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
+<head>
+	<meta charset="UTF-8">
+	<title>お気に入り - フリマアプリ</title>
+	<link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+
+<body>
+	<div class="container">
+
+		<h1>お気に入り</h1>
+		<p>あなたがお気に入り登録した商品の一覧です。</p>
+
+		<div class="item-grid">
+			<div class="item-card" th:each="item : ${favoriteItems}">
+
+				<a th:href="@{/items/{id}(id=${item.id})}">
+					<!-- 商品画像（なければプレースホルダ画像） -->
+					<img th:src="${item.imageUrl != null ? 
+								item.imageUrl :'/images/placeholder.png'}" 
+						alt="商品画像">
+					<!-- 商品名 -->
+					<h3 th:text="${item.name}"></h3>
+					<!-- 価格 -->
+					<p class="price" 
+						th:text="'¥' + ${#numbers.formatDecimal(
+									item.price, 0, 'COMMA', 0, 'POINT')}"></p>
+					<!-- 出品ステータス -->
+					<p class="status" th:text="${item.status}"></p>
+				</a>
+			</div>
+			<!-- お気に入りが空の場合 -->
+			<div th:if="${#lists.isEmpty(favoriteItems)}">
+				<p>お気に入りの商品はありません。</p>
+			</div>
+		</div>
+		<!-- 画面下部の戻るボタン -->
+		<div class="button-group">
+			<a th:href="@{/my-page}" class="button secondary">マイページに戻る</a>
+		</div>
+	</div>
 </body>
+
 </html>

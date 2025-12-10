@@ -1,11 +1,71 @@
 <!--資料P120-->
 <!DOCTYPE html>
-<htmlxmlns:th="http://www.thymeleaf.org">
-<head>
-<meta charset="UTF-8">
-<title>Insert title here</title>
-</head>
-<body>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org" 
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
+<head>
+	<meta charset="UTF-8">
+	<title>販売履歴 - フリマアプリ</title>
+	<link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+
+<body>
+	<div class="container">
+
+		<h1>販売履歴</h1>
+		<p>あなたが販売した商品の一覧です。</p>
+
+<!-- 販売履歴テーブル -->
+		<table>
+			<thead>
+				<tr>
+					<!-- 商品名列 -->
+					<th>商品名</th>
+					<!-- 購入者列 -->
+					<th>購入者</th>
+					<!-- 価格列 -->
+					<th>価格</th>
+					<!-- ステータス列 -->
+					<th>ステータス</th>
+					<!-- 操作列（発送ボタンなど） -->
+					<th>操作</th>
+				</tr>
+			</thead>
+
+			<tbody>
+				<tr th:each="order : ${mySales}">
+					<!-- 商品名 -->
+					<td th:text="${order.item.name}"></td>
+					<!-- 購入者名 -->
+					<td th:text="${order.buyer.name}"></td>
+					<!-- 価格 -->
+					<td th:text="'¥' + ${#numbers.formatDecimal(
+								order.price, 0, 'COMMA', 0,'POINT')}"></td>
+					<!-- 注文ステータス -->
+					<td th:text="${order.status}"></td>
+					<!-- 操作セル：発送済みにするボタンを条件表示 -->
+					<td>
+						<!-- ステータスが購入済のときのみ発送ボタンを表示 -->
+						<form th:action="@{/orders/{id}/ship(id=${order.id})}" 
+							method="post" th:if="${order.status =='購入済' }">
+							<!-- 送信ボタン（発送済みに更新） -->
+							<button type="submit" class="button">発送済みにする</button>
+						</form>
+					</td>
+				</tr>
+
+				<!-- データが空の場合 -->
+				<tr th:if="${#lists.isEmpty(mySales)}">
+					<td colspan="5">販売した商品はありません。</td>
+				</tr>
+			</tbody>
+		</table>
+		<!-- 画面下部の戻るボタン -->
+		<div class="button-group">
+			<a th:href="@{/my-page}" class="button secondary">マイページに戻る</a>
+		</div>
+	</div>
 </body>
+
 </html>

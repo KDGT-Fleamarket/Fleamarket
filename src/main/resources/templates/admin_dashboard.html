@@ -1,11 +1,97 @@
 <!--資料P90-->
 <!DOCTYPE html>
-<htmlxmlns:th="http://www.thymeleaf.org">
-<head>
-<meta charset="UTF-8">
-<title>Insert title here</title>
-</head>
-<body>
+<!-- 文書のルート要素。言語を日本語、Thymeleaf と Spring Security Dialect の XMLNS を宣言 -->
+<html lang="ja" xmlns:th="http://www.thymeleaf.org" 
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
+<head>
+	<meta charset="UTF-8">
+	<title>管理者ダッシュボード - フリマアプリ</title>
+	<link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+
+<body>
+	<div class="container">
+		
+		<!-- ページ見出し -->
+		<h1>管理者ダッシュボード</h1>
+		<!-- ユーザー名を Spring Security の認証情報から表示 -->
+		<p>ようこそ、<span sec:authentication="name"></span>さん！ (管理者)</p>
+		
+		<!-- 主要ナビゲーション -->
+		<div class="main-nav">
+			<!-- 商品管理画面 -->
+			<a th:href="@{/admin/items}" class="button">商品管理</a>
+			<!-- ユーザー管理画面 -->
+			<a th:href="@{/admin/users}" class="button">ユーザー管理</a>
+			<!-- 統計画面 -->
+			<a th:href="@{/admin/statistics}" class="button">統計画面</a>
+			<!-- ログアウト（CSRF 等は Spring Security が自動付与） -->
+			<form th:action="@{/logout}" method="post" style="display:inline;">
+				<button type="submit" class="button secondary">ログアウト</button>
+			</form>
+		</div>
+		
+<!-- 最近の出品 -->
+		<h2>最近の出品</h2>
+		<table>
+			<thead>
+				<tr>
+					<th>商品名</th>
+					<th>出品者</th>
+					<th>価格</th>
+					<th>ステータス</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="item : ${recentItems}">
+					<!-- 商品名 -->
+					<td th:text="${item.name}"></td>
+					<!-- 出品者 -->
+					<td th:text="${item.seller.name}"></td>
+					<!-- 価格 -->
+					<td th:text="'¥' + ${#numbers.formatDecimal(item.price, 0, 'COMMA', 0, 'POINT')}"></td>
+					<!-- 商品のステータス（出品中/売却済） -->
+					<td th:text=" ${item.status}"></td>
+				</tr>
+				
+				<!-- 出品がない場合 -->
+				<tr th:if="${#lists.isEmpty(recentItems)}">
+					<td colspan="4">最近の出品はありません。</td>
+				</tr>
+			</tbody>
+		</table>
+		
+<!-- 最近の注文 -->
+		<h2>最近の注文</h2>
+		<table>
+			<thead>
+				<tr>
+					<th>商品名</th>
+					<th>購入者</th>
+					<th>価格</th>
+					<th>ステータス</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="order : ${recentOrders}">
+					<!-- 商品名 -->
+					<td th:text="${order.item.name}"></td>
+					<!-- 購入者 -->
+					<td th:text="${order.buyer.name}"></td>
+					<!-- 価格 -->
+					<td th:text="'¥' + ${#numbers.formatDecimal(order.price, 0, 'COMMA', 0, 'POINT')}"></td>
+					<!-- 注文ステータス -->
+					<td th:text="${order.status}"></td>
+				</tr>
+				<!-- 注文がない場合 -->
+				<tr th:if="${#lists.isEmpty(recentOrders)}">
+					<td colspan="4">最近の注文はありません。</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
 </body>
+
 </html>
