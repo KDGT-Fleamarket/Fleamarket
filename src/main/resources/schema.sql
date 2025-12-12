@@ -19,7 +19,7 @@ CREATE TABLE users (
 	line_notify_token VARCHAR(255), -- LINE Notify アクセストークン
 	enabled BOOLEAN NOT NULL DEFAULT TRUE -- アカウント有効/無効フラグ（既定は有効）
 	-- 追加カラム
-	addresses VARCHAR(255), -- 住所
+	address VARCHAR(255), -- 住所
 	last_login_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, -- 最終ログイン日時
 	terms_agreed_at TIMESTAMP NULL TRUE -- 利用規約最新同意日時
 );
@@ -37,8 +37,7 @@ CREATE TABLE item (
 	description TEXT, -- 商品説明（任意）
 	price NUMERIC(10,2) NOT NULL, -- 価格（小数 2 桁）
 	category_id INT, -- カテゴリ ID（FK → category.id）
-	status VARCHAR(20) DEFAULT '出品中',
-	-- 出品ステータス（既定：出品中）
+	status VARCHAR(20) DEFAULT '出品中', -- 出品ステータス（既定：出品中）
 	image_url TEXT, -- 画像 URL（Cloudinary 等）
 	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- 作成日時（既定で現在時刻）
 	FOREIGN KEY (user_id) REFERENCES users(id), -- 出品者 FK 制約
