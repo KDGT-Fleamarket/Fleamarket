@@ -1,5 +1,7 @@
 package com.example.fleamarket.entity;
 
+import java.time.LocalDateTime;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -12,15 +14,24 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "category")
+@Table(name = "user_complaint")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Category {
+public class UserComplaint {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(nullable = false, unique = true)
-	private String name;
+	@Column(name = "reported_user_id", nullable = false)
+	private Long reportedUserId;
+
+	@Column(name = "reporter_user_id", nullable = false)
+	private Long reporterUserId;
+
+	@Column(nullable = false)
+	private String reason;
+
+	@Column(name = "created_at", nullable = false)
+	private LocalDateTime createdAt = LocalDateTime.now();
 }
