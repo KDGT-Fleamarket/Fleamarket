@@ -1,11 +1,76 @@
 <!--資料P93-->
 <!DOCTYPE html>
-<htmlxmlns:th="http://www.thymeleaf.org">
-<head>
-<meta charset="UTF-8">
-<title>Insert title here</title>
-</head>
-<body>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org" 
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
+<head>
+	<meta charset="UTF-8">
+	<title>管理者: 商品管理 - フリマアプリ</title>
+	<link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+<!-- 表示本体 -->
+<body>
+	<div class="container">
+		
+		<!-- 見出し -->
+		<h1>管理者: 商品管理</h1>
+		<!-- 説明文 -->
+		<p>システム内の全ての商品を管理します。</p>
+		
+		<!-- 商品一覧 -->
+		<table>
+			<!-- 見出し -->
+			<thead>
+				<tr>
+					<th>ID</th>
+					<th>商品名</th>
+					<th>出品者</th>
+					<th>価格</th>
+					<th>カテゴリ</th>
+					<th>ステータス</th>
+					<th>操作</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="item : ${items}">
+					<!-- 商品 ID -->
+					<td th:text="${item.id}"></td>
+					<!-- 商品名 -->
+					<td th:text="${item.name}"></td>
+					<!-- 出品者名 -->
+					<td th:text="${item.seller.name}"></td>
+					<!-- 価格 -->
+					<td th:text="'¥' + ${#numbers.formatDecimal(item.price, 0, 'COMMA', 0,'POINT')}"></td>
+					<!-- カテゴリ名 -->
+					<td th:text="${item.category != null ? item.category.name : '未分類'}"></td>
+					<!-- 商品ステータス -->
+					<td th:text="${item.status}"></td>
+					<!-- 削除ボタン -->
+					<td>
+						<!-- 管理者による削除 -->
+						<form th:action="@{/admin/items/{id}/delete(id=${item.id})}" method="post"
+							style="display:inline;">
+							<!-- 削除ボタン(confirm で最終確認) -->
+							<button type="submit" class="button danger" onclick="return
+									confirm('本当にこの商品を削除しますか？');">削除</button>
+						</form>
+					</td>
+				</tr>
+				<!-- 空の場合 -->
+				<tr th:if="${#lists.isEmpty(items)}">
+					<td colspan="7">商品がありません。</td>
+				</tr>
+			</tbody>
+		</table>
+		
+		<!-- 管理者ダッシュボードへ -->
+		<div class="button-group">
+			<a th:href="@{/admin/dashboard}" class="button secondary">
+				管理者ダッシュボードに戻る
+			</a>
+		</div>
+	</div>
 </body>
+
 </html>

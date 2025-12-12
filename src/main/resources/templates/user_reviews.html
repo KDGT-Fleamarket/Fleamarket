@@ -1,11 +1,74 @@
 <!--資料P124、追加ページ（自分がしたレビュー、自分へのレビュー）-->
 <!DOCTYPE html>
-<htmlxmlns:th="http://www.thymeleaf.org">
-<head>
-<meta charset="UTF-8">
-<title>Insert title here</title>
-</head>
-<body>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org" 
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
+<head>
+	<meta charset="UTF-8">
+	<title>自分の評価 - フリマアプリ</title>
+	<link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+
+<body>
+	<div class="container">
+		
+		<h1>自分の評価</h1>
+		<p>あなたが送信した評価の一覧です。</p>
+		
+<!-- 評価一覧 -->
+		<table>
+			<thead>
+				<tr>
+					<!-- 商品名 -->
+					<th>商品名</th>
+					<!-- 出品者 -->
+					<th>出品者</th>
+					<!-- 評価（★表示） -->
+					<th>評価</th>
+					<!-- コメント -->
+					<th>コメント</th>
+					<!-- 評価日時 -->
+					<th>評価日時</th>
+				</tr>
+			</thead>
+
+			<tbody>
+				<tr th:each="review : ${reviews}">
+					<!-- 商品名 -->
+					<td th:text="${review.item.name}"></td>
+					<!-- 出品者 -->
+					<td th:text="${review.seller.name}"></td>
+					<!-- 星評価（1〜5 のシーケンスで★/☆を描画） -->
+					<td>
+						<!-- 1〜5 までの数列を回す -->
+						<span th:each="i : ${#numbers.sequence(1, 5)}">
+							<!-- i が評価以下なら★ -->
+							<span th:if="${i <= review.rating}">★</span>
+							<!-- i が評価より大きければ☆ -->
+							<span th:if="${i > review.rating}">☆</span>
+						</span>
+					</td>
+					<!-- レビューコメント -->
+					<td th:text="${review.comment}"></td>
+					<!-- 作成日時 -->
+					<td th:text="${#temporals.format(review.createdAt, 
+									'yyyy/MM/ddHH:mm')}">
+					</td>
+				</tr>
+				<!-- レビューが 0 件のときの表示 -->
+				<tr th:if="${#lists.isEmpty(reviews)}">
+					<td colspan="5">まだ評価を送信していません。</td>
+				</tr>
+			</tbody>
+		</table>
+
+<!-- 画面下部の戻る導線 -->
+		<div class="button-group">
+			<!-- マイページへ戻る -->
+			<a th:href="@{/my-page}" class="button secondary">マイページに戻る</a>
+		</div>
+	</div>
 </body>
+
 </html>
