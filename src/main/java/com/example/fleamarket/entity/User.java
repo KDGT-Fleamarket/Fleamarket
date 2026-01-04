@@ -36,9 +36,6 @@ public class User {
 	@Column(nullable = false)
 	private String role; // "USER" or "ADMIN"
 
-	@Column(name = "line_id")
-	private String lineId;
-
 	@Column(nullable = false)
 	private boolean enabled = true;
 
