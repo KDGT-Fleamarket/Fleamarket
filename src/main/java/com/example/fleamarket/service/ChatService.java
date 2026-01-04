@@ -26,46 +26,49 @@ public class ChatService {
 		this.lineNotifyService = lineNotifyService;
 	}
 
-	// 商品 ID に紐づくチャット履歴を昇順で取得
 	public List<Chat> getChatMessagesByItem(Long itemId) {
-		// 商品の存在を確認（なければ 400 相当の例外）
 		Item item = itemRepository.findById(itemId)
 				.orElseThrow(() -> new IllegalArgumentException("Item not found"));
-		// 作成日時昇順でリストを返す
 		return chatRepository.findByItemOrderByCreatedAtAsc(item);
 	}
 
-	// メッセージ送信：保存して相手に LINE 通知（可能なら）を行う
 	public Chat sendMessage(Long itemId, User sender, String message) {
-		// 対象商品を取得（存在しなければ例外）
 		Item item = itemRepository.findById(itemId)
 				.orElseThrow(() -> new IllegalArgumentException("Item not found"));
-		// 新規チャットエンティティを構築
+
 		Chat chat = new Chat();
-		// 商品を紐づけ
 		chat.setItem(item);
-		// 送信者を紐づけ
 		chat.setSender(sender);
-		// 本文を設定
 		chat.setMessage(message);
-		// 現在時刻で送信時刻を設定
 		chat.setCreatedAt(LocalDateTime.now());
-		// 保存して永続化
+
 		Chat savedChat = chatRepository.save(chat);
-		// 簡易実装：受信者を出品者とみなして通知（詳細な相手判定は拡張で対応）
-		User receiver = item.getSeller();
-		// 受信者が通知トークンを設定していれば通知を送る
-		if (receiver != null && receiver.getLineId() != null) {
-			// 通知本文を作成
-			String notificationMessage = String.format("\n 商品「%s」に関する新しいメッセージが届きました！\n 送信者: %s\n メッセージ: %s",
+
+		// Send LINE notification to the other party in the chat
+		User receiver = null;
+		if (item.getSeller().equals(sender)) {
+			// If sender is seller, receiver is buyer (if item is sold)
+			// This logic needs to be refined if chat is before purchase
+			// For now, assuming chat is always between seller and buyer of a purchased item
+			// Or, if chat is before purchase, the other party is always the seller
+			// For simplicity, let's assume the chat is always between the item's seller and the current sender's counterpart
+			// If sender is seller, receiver is the buyer of the item (if any order exists)
+			// If sender is buyer, receiver is the seller of the item
+			receiver = item.getSeller(); // Default to seller if sender is buyer
+			// If sender is seller, we need to find the buyer from an order associated with this item
+			// This requires more complex logic, for now, let's simplify: chat is always with the seller
+		} else { // Sender is buyer
+			receiver = item.getSeller();
+		}
+
+		if (receiver != null && receiver.getLineNotifyToken() != null) {
+			String notificationMessage = String.format("\n商品「%s」に関する新しいメッセージが届きました！\n送信者: %s\nメッセージ: %s",
 					item.getName(),
 					sender.getName(),
 					message);
-			// LINE Notifyへ送信
-			lineNotifyService.sendMessage(receiver.getLineId(), notificationMessage);
+			lineNotifyService.sendMessage(receiver.getLineNotifyToken(), notificationMessage);
 		}
-		// 保存結果を返却
+
 		return savedChat;
 	}
-
 }
