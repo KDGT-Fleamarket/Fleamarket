@@ -61,13 +61,13 @@ public class ChatService {
 			receiver = item.getSeller();
 		}
 
-		if (receiver != null && receiver.getLineNotifyToken() != null) {
-			String notificationMessage = String.format("\n商品「%s」に関する新しいメッセージが届きました！\n送信者: %s\nメッセージ: %s",
-					item.getName(),
-					sender.getName(),
-					message);
-			lineNotifyService.sendMessage(receiver.getLineNotifyToken(), notificationMessage);
-		}
+		//		if (receiver != null && receiver.getLineNotifyToken() != null) {
+		//			String notificationMessage = String.format("\n商品「%s」に関する新しいメッセージが届きました！\n送信者: %s\nメッセージ: %s",
+		//					item.getName(),
+		//					sender.getName(),
+		//					message);
+		//			lineNotifyService.sendMessage(receiver.getLineNotifyToken(), notificationMessage);
+		//		}
 
 		return savedChat;
 	}

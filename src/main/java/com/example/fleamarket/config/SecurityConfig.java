@@ -2,19 +2,24 @@ package com.example.fleamarket.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
-import com.example.fleamarket.repository.UserRepository;
+import com.example.fleamarket.security.CustomUserDetailsService;
 
 @Configuration
 @EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
+
+	private final CustomUserDetailsService customUserDetailsService;
+
+	// コンストラクタで受け取るように変更
+	public SecurityConfig(CustomUserDetailsService customUserDetailsService) {
+		this.customUserDetailsService = customUserDetailsService;
+	}
 
 	@Bean
 	public PasswordEncoder passwordEncoder() {
@@ -23,44 +28,19 @@ public class SecurityConfig {
 	}
 
 	@Bean
-	public UserDetailsService userDetailsService(UserRepository userRepository) {
-		return username -> {
-			System.out.println("★★★ ログイン試行中: " + username);
-			com.example.fleamarket.entity.User user = userRepository.findByEmail(username)
-					.orElseThrow(() -> {
-						System.out.println("★★★ ユーザーが見つかりません: " + username);
-						return new org.springframework.security.core.userdetails.UsernameNotFoundException("Not found");
-					});
-
-			System.out.println("★★★ DBから取得したパスワード: [" + user.getPassword() + "]");
-			System.out.println("★★★ DBから取得したロール: [" + user.getRole() + "]");
-
-			return org.springframework.security.core.userdetails.User.withUsername(user.getEmail())
-					.password(user.getPassword())
-					.roles(user.getRole().replace("ROLE_", "")) // roles()は自動でROLE_を足すので除去して渡す
-					.build();
-		};
-	}
-
-	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http
 				.authorizeHttpRequests(auth -> auth
-						.requestMatchers(
-								"/login",
-								"/css/**", "/js/**", "/images/**", "/webjars/**")
-						.permitAll()
-						.requestMatchers("/admin/**").hasRole("ADMIN")
+						.requestMatchers("/login", "/login?error", "/error", "/css/**", "/js/**").permitAll()
 						.anyRequest().authenticated())
 				.formLogin(form -> form
 						.loginPage("/login")
-						.defaultSuccessUrl("/items", true) // ログイン成功後
-						.permitAll())
-				.logout(logout -> logout
-						.logoutUrl("/logout") // POST /logout
-						.logoutSuccessUrl("/login?logout")
-						.permitAll())
-				.csrf(Customizer.withDefaults());
+						.loginProcessingUrl("/login")
+						.defaultSuccessUrl("/items", true)
+						.failureUrl("/login?error")
+						.permitAll());
+		// ログを仕込んだクラスを明示的にセットします
+		http.userDetailsService(customUserDetailsService);
 
 		return http.build();
 	}
