@@ -43,9 +43,11 @@ public class Item {
 	@JoinColumn(name = "category_id")
 	private Category category;
 
+	@Column(length = 20)
 	private String status = "出品中"; // default status
 
 	// For image URLs (Cloudinary)
+	@Column(name = "image_url", columnDefinition = "TEXT")
 	private String imageUrl;
 
 	@Column(name = "created_at", nullable = false) // New field

@@ -25,7 +25,7 @@ public class DashboardController {
 		this.appOrderService = appOrderService;
 	}
 
-	@GetMapping("/dashboard")
+	@GetMapping("/admin/dashboard")
 	public String dashboard(@AuthenticationPrincipal UserDetails userDetails, Model model) {
 		User currentUser = userRepository.findByEmailIgnoreCase(userDetails.getUsername())
 				.orElseThrow(() -> new RuntimeException("User not found"));
