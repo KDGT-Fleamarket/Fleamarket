@@ -1,6 +1,9 @@
 //追加クラス
 package com.example.fleamarket.entity;
 
+import java.time.LocalDate;
+
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -20,5 +23,12 @@ public class Terms {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+	@Column(name = "terms_version") // DDLの主キー名に合わせます
+	private Long termsVersion;
+
+	@Column(name = "terms_content", nullable = false, columnDefinition = "TEXT")
+	private String termsContent;
+
+	@Column(name = "effective_date", nullable = false)
+	private LocalDate effectiveDate;
 }
