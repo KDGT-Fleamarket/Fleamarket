@@ -34,7 +34,7 @@ public class Report {
 	private User reporter;
 
 	@Enumerated(EnumType.STRING) // PostgreSQLのENUMと合わせる
-	@Column(name = "report_type", nullable = false, columnDefinition = "report_type")
+	@Column(name = "report_type", nullable = false)
 	private ReportType reportType;
 
 	@Column(nullable = false, columnDefinition = "TEXT")

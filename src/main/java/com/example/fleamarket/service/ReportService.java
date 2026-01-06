@@ -35,8 +35,8 @@ public class ReportService {
 	}
 
 	// 管理者用：全件取得
-	public List<Report> getAllReports() {
-		return reportRepository.findAllByOrderByCreatedAtDesc();
+	public List<Report> getAllReportsForAdmin() {
+		return reportRepository.findAllWithReporterOrderByCreatedAtDesc();
 	}
 
 	// IDによる1件取得
@@ -46,8 +46,10 @@ public class ReportService {
 	}
 
 	// 管理者用：更新（返信・ステータス変更）
-	public void updateReport(Long id, String status, String message) {
-		Report report = getReportById(id);
+	public void updateReportForAdmin(Long id, String status, String message) {
+		Report report = reportRepository.findById(id)
+				.orElseThrow(() -> new RuntimeException("Report not found"));
+
 		report.setStatus(status);
 		report.setMessage(message);
 		reportRepository.save(report);
