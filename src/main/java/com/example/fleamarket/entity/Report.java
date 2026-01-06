@@ -34,7 +34,7 @@ public class Report {
 	private User reporter;
 
 	@Enumerated(EnumType.STRING) // PostgreSQLのENUMと合わせる
-	@Column(name = "report_type", nullable = false)
+	@Column(name = "report_type", nullable = false, columnDefinition = "report_type")
 	private ReportType reportType;
 
 	@Column(nullable = false, columnDefinition = "TEXT")
@@ -47,6 +47,7 @@ public class Report {
 	private LocalDateTime createdAt = LocalDateTime.now();
 
 	public enum ReportType {
-		違反報告, お問い合わせ
+		VIOLATION, // 違反報告
+		INQUIRY // お問い合わせ
 	}
 }

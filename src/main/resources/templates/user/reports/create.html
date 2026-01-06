@@ -1,26 +1,31 @@
 <!DOCTYPE html>
-<htmlxmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
-<meta charset="UTF-8">
-<title>お問い合わせフォーム</title>
-<link rel="stylesheet" th:href="@{/css/style.css}">e>
+    <meta charset="UTF-8">
+    <title>お問い合わせフォーム</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
-	<div class="container">
-	<form th:action="@{/reports/create}" th:object="${report}" method="post">
-	    <div>
-	        <label>種類</label>
-	        <select th:field="*{reportType}">
-	            <option th:each="type : ${types}" th:value="${type}" th:text="${type}"></option>
-	        </select>
-	    </div>
-	    <div>
-	        <label>内容</label>
-	        <textarea th:field="*{message}" required rows="5" style="width:100%"></textarea>
-	    </div>
-	    <button type="submit" class="button">送信する</button>
-		<a th:href="@{/my-page/reports}" class="button secondary">キャンセル</a>
-	</form>
-	</div>
+<div class="container">
+    <form th:action="@{/reports/create}" th:object="${report}" method="post">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+
+        <div>
+            <label>種類</label>
+            <select th:field="*{reportType}">
+                <option value="INQUIRY">お問い合わせ</option>
+                <option value="VIOLATION">違反報告</option>
+            </select>
+        </div>
+
+        <div>
+            <label>内容</label>
+            <textarea th:field="*{message}" required rows="5" style="width:100%"></textarea>
+        </div>
+
+        <button type="submit" class="button">送信する</button>
+        <a th:href="@{/my-page/reports}" class="button secondary">キャンセル</a>
+    </form>
+</div>
 </body>
 </html>
