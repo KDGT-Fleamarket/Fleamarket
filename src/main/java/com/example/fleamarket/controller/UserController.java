@@ -11,6 +11,7 @@ import com.example.fleamarket.entity.User;
 import com.example.fleamarket.service.AppOrderService;
 import com.example.fleamarket.service.FavoriteService;
 import com.example.fleamarket.service.ItemService;
+import com.example.fleamarket.service.ReportService;
 import com.example.fleamarket.service.ReviewService; // Add this import
 import com.example.fleamarket.service.UserService;
 
@@ -22,15 +23,17 @@ public class UserController {
 	private final ItemService itemService;
 	private final AppOrderService appOrderService;
 	private final FavoriteService favoriteService;
-	private final ReviewService reviewService; // Declare ReviewService
+	private final ReviewService reviewService;
+	private final ReportService reportService;
 
 	public UserController(UserService userService, ItemService itemService, AppOrderService appOrderService,
-			FavoriteService favoriteService, ReviewService reviewService) {
+			FavoriteService favoriteService, ReviewService reviewService, ReportService reportService) {
 		this.userService = userService;
 		this.itemService = itemService;
 		this.appOrderService = appOrderService;
 		this.favoriteService = favoriteService;
-		this.reviewService = reviewService; // Initialize ReviewService
+		this.reviewService = reviewService;
+		this.reportService = reportService;
 	}
 
 	@GetMapping
@@ -39,7 +42,7 @@ public class UserController {
 				.orElseThrow(() -> new RuntimeException("User not found"));
 
 		model.addAttribute("user", currentUser);
-		return "my_page";
+		return "user/my_page";
 	}
 
 	@GetMapping("/selling")
@@ -48,7 +51,7 @@ public class UserController {
 				.orElseThrow(() -> new RuntimeException("User not found"));
 
 		model.addAttribute("sellingItems", itemService.getItemsBySeller(currentUser));
-		return "seller_items";
+		return "user/selling/list";
 	}
 
 	@GetMapping("/orders")
@@ -57,7 +60,7 @@ public class UserController {
 				.orElseThrow(() -> new RuntimeException("User not found"));
 
 		model.addAttribute("myOrders", appOrderService.getOrdersByBuyer(currentUser));
-		return "buyer_app_orders";
+		return "user/orders/list";
 	}
 
 	@GetMapping("/sales")
@@ -66,7 +69,7 @@ public class UserController {
 				.orElseThrow(() -> new RuntimeException("User not found"));
 
 		model.addAttribute("mySales", appOrderService.getOrdersBySeller(currentUser));
-		return "seller_app_orders";
+		return "user/sales/list";
 	}
 
 	@GetMapping("/favorites")
@@ -75,7 +78,7 @@ public class UserController {
 				.orElseThrow(() -> new RuntimeException("User not found"));
 
 		model.addAttribute("favoriteItems", favoriteService.getFavoriteItemsByUser(currentUser));
-		return "my_favorites";
+		return "user/favorites/list";
 	}
 
 	@GetMapping("/reviews")
@@ -84,6 +87,16 @@ public class UserController {
 				.orElseThrow(() -> new RuntimeException("User not found"));
 
 		model.addAttribute("reviews", reviewService.getReviewsByReviewer(currentUser));
-		return "user_reviews";
+		return "user/reviews/list";
+	}
+
+	@GetMapping("/reports")
+	public String myReports(@AuthenticationPrincipal UserDetails userDetails, Model model) {
+		User currentUser = userService.getUserByEmail(userDetails.getUsername())
+				.orElseThrow(() -> new RuntimeException("User not found"));
+
+		model.addAttribute("reports", reportService.getReportsByReporter(currentUser));
+
+		return "user/reports/list";
 	}
 }
