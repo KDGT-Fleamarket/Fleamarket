@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>新規規約作成</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <div class="container">
+        <h1>新規利用規約の作成</h1>
+        <p style="color: #666;">※新しい施行日を設定すると、その日以降にログインした全ユーザーに再同意が求められます。</p>
+
+        <form th:action="@{/admin/terms/create}" th:object="${terms}" method="post">
+            <div style="margin-bottom: 15px;">
+                <label>施行日（この日から有効）:</label><br>
+                <input type="date" th:field="*{effectiveDate}" required>
+            </div>
+            
+            <div style="margin-bottom: 15px;">
+                <label>規約本文:</label><br>
+                <textarea th:field="*{termsContent}" rows="15" style="width: 100%;" required 
+                          placeholder="利用規約の内容を入力してください..."></textarea>
+            </div>
+
+            <div class="button-group">
+                <button type="submit" class="button">この内容で登録・更新</button>
+                <a th:href="@{/admin/terms}" class="button secondary">キャンセル</a>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<htmlxmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>利用規約</title>
+<link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+	<div class="container">
+	    <h1>利用規約</h1>
+		<div class="terms-box" th:text="${terms.termsContent}" 
+		         style="white-space: pre-wrap; border: 1px solid #ccc; padding: 20px; background: #fff;">
+		    </div>
+
+		    <div th:if="${isViewOnly == null}" style="margin-top: 20px;">
+		        <form th:action="@{/terms/agree}" method="post">
+		            <button type="submit" class="button">規約に同意して利用を開始する</button>
+		        </form>
+		    </div>
+
+		    <div th:if="${isViewOnly}" style="margin-top: 20px;">
+		        <a th:href="@{/items}" class="button secondary">商品一覧に戻る</a>
+		    </div>
+	</div>
+</body>
+</html>

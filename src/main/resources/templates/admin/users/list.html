@@ -7,6 +7,12 @@
 
 <main class="container">
   <h1>ユーザー管理</h1>
+  
+  <div class="action-bar">
+      <a th:href="@{/admin/users/create}" class="button primary">
+          + 管理者アカウントを新規作成
+      </a>
+  </div>
 
   <form method="get" class="toolbar">
     <input type="text" name="q" th:value="${q}" placeholder="検索（名前/メール）">

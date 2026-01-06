@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>利用規約管理</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <div class="container">
+        <h1>利用規約管理</h1>
+        
+        <div class="action-bar" style="margin-bottom: 20px;">
+            <a th:href="@{/admin/terms/create}" class="button">＋ 新しい規約を作成</a>
+            <a th:href="@{/admin/dashboard}" class="button secondary">戻る</a>
+        </div>
+
+        <table border="1" style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr style="background-color: #f4f4f4;">
+                    <th>Ver.</th>
+                    <th>施行日</th>
+                    <th>内容（抜粋）</th>
+                    <th>状態</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="t : ${termsList}">
+                    <td th:text="${t.termsVersion}"></td>
+                    <td th:text="${t.effectiveDate}"></td>
+                    <td th:text="${#strings.abbreviate(t.termsContent, 50)}"></td>
+                    <td>
+                        <span th:if="${t.effectiveDate.isBefore(T(java.time.LocalDate).now()) || t.effectiveDate.isEqual(T(java.time.LocalDate).now())}" 
+                              style="color: green; font-weight: bold;">施行中</span>
+                        <span th:if="${t.effectiveDate.isAfter(T(java.time.LocalDate).now())}" 
+                              style="color: blue;">予約中</span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
