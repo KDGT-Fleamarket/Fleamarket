@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>利用規約詳細 - 管理画面</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <div class="container">
+        <h1>利用規約 詳細確認</h1>
+
+        <main>
+            <section class="info-card">
+                <p><strong>バージョン:</strong> <span th:text="${terms.termsVersion}"></span></p>
+                <p>
+                    <strong>施行日:</strong> <span th:text="${terms.effectiveDate}"></span>
+                    <span th:if="${terms.effectiveDate.isBefore(T(java.time.LocalDate).now()) || terms.effectiveDate.isEqual(T(java.time.LocalDate).now())}" 
+                          style="background-color: #e6fffa; color: #2d6a4f; border: 1px solid #2d6a4f; padding: 2px 8px; border-radius: 4px; margin-left: 10px; font-weight: bold; font-size: 0.9em;">
+                        施行中
+                    </span>
+                    <span th:if="${terms.effectiveDate.isAfter(T(java.time.LocalDate).now())}" 
+                          style="background-color: #ebf8ff; color: #2b6cb0; border: 1px solid #2b6cb0; padding: 2px 8px; border-radius: 4px; margin-left: 10px; font-weight: bold; font-size: 0.9em;">
+                        予約中
+                    </span>
+                </p>
+                
+                <div class="content-area" style="margin-top: 20px;">
+                    <label><strong>規約本文:</strong></label>
+                    <div style="white-space: pre-wrap; background: #f9f9f9; padding: 20px; border: 1px solid #ddd; border-radius: 5px; margin-top: 10px;"
+                         th:text="${terms.termsContent}">
+                    </div>
+                </div>
+            </section>
+
+            <div class="button-group" style="margin-top: 20px;">
+                <a th:href="@{/admin/terms/list}" class="button secondary">一覧に戻る</a>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

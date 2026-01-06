@@ -420,3 +420,9 @@ tr:hover {
     padding: 10px 20px;
     font-size: 1em;
 }
+
+
+.status-red { color: #d9534f; background-color: #f9f2f4; }
+.status-blue { color: #337ab7; background-color: #f2f7f9; }
+.status-green { color: #5cb85c; background-color: #f2f9f2; }
+.button.small { padding: 4px 8px; font-size: 0.85em; }

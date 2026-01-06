@@ -47,6 +47,7 @@ public class Report {
 	private LocalDateTime createdAt = LocalDateTime.now();
 
 	public enum ReportType {
-		違反報告, お問い合わせ
+		VIOLATION, // 違反報告
+		INQUIRY // お問い合わせ
 	}
 }

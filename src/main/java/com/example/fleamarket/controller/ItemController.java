@@ -61,7 +61,7 @@ public class ItemController {
 
 		model.addAttribute("items", items);
 		model.addAttribute("categories", categories);
-		return "item_list";
+		return "user/items/list";
 	}
 
 	@GetMapping("/{id}")
@@ -83,14 +83,14 @@ public class ItemController {
 					.orElseThrow(() -> new RuntimeException("User not found"));
 			model.addAttribute("isFavorited", favoriteService.isFavorited(currentUser, id));
 		}
-		return "item_detail";
+		return "user/items/detail";
 	}
 
 	@GetMapping("/new")
 	public String showAddItemForm(Model model) {
 		model.addAttribute("item", new Item());
 		model.addAttribute("categories", categoryService.getAllCategories());
-		return "item_form";
+		return "user/items/form";
 	}
 
 	@PostMapping
@@ -134,7 +134,7 @@ public class ItemController {
 		}
 		model.addAttribute("item", item.get());
 		model.addAttribute("categories", categoryService.getAllCategories());
-		return "item_form";
+		return "user/items/form";
 	}
 
 	@PostMapping("/{id}") // Using POST for simplicity, can be PUT with HiddenHttpMethodFilter

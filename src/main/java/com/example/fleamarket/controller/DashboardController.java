@@ -33,7 +33,7 @@ public class DashboardController {
 		if ("ADMIN".equals(currentUser.getRole())) {
 			model.addAttribute("recentItems", itemService.getAllItems());
 			model.addAttribute("recentOrders", appOrderService.getAllOrders());
-			return "admin_dashboard";
+			return "admin/dashboard";
 		} else {
 			return "redirect:/items";
 		}

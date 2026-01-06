@@ -34,7 +34,7 @@ public class ChatController {
 		model.addAttribute("item", itemService.getItemById(itemId)
 				.orElseThrow(() -> new RuntimeException("Item not found")));
 		model.addAttribute("chats", chatService.getChatMessagesByItem(itemId));
-		return "item_detail"; // Re-use item_detail for chat display
+		return "user/items/detail"; // Re-use item_detail for chat display
 	}
 
 	@PostMapping("/{itemId}")

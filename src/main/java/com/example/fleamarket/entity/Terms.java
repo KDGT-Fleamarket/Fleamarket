@@ -1,4 +1,4 @@
-//追加クラス
+
 package com.example.fleamarket.entity;
 
 import java.time.LocalDate;

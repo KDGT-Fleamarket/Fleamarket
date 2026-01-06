@@ -35,7 +35,7 @@ public class AdminController {
 	@GetMapping("/items")
 	public String manageItems(Model model) {
 		model.addAttribute("items", itemService.getAllItems());
-		return "admin_items";
+		return "admin/items/list";
 	}
 
 	@PostMapping("/items/{id}/delete")
@@ -61,7 +61,7 @@ public class AdminController {
 		model.addAttribute("endDate", endDate);
 		model.addAttribute("totalSales", appOrderService.getTotalSales(startDate, endDate));
 		model.addAttribute("orderCountByStatus", appOrderService.getOrderCountByStatus(startDate, endDate));
-		return "admin_statistics";
+		return "admin/statistics";
 	}
 
 	@GetMapping("/statistics/csv")

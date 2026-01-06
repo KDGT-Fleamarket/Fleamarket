@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>お問い合わせ詳細</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <div class="container">
+        <h1>お問い合わせ・報告 詳細</h1>
+
+        <section class="info-card">
+            <p><strong>投稿日時:</strong> <span th:text="${#temporals.format(report.createdAt, 'yyyy/MM/dd HH:mm')}"></span></p>
+            <p><strong>種類:</strong> <span th:text="${report.reportType}"></span></p>
+            <p><strong>ステータス:</strong> 
+                <span th:text="${report.status}" 
+                      th:style="${report.status == '未処理' ? 'color: red;' : (report.status == '対応中' ? 'color: blue;' : 'color: green;')} + ' font-weight: bold;'">
+                </span>
+            </p>
+            
+            <div class="content-area" style="margin-top: 20px;">
+                <label><strong>内容と管理者からの回答:</strong></label>
+                <div style="white-space: pre-wrap; background: #f9f9f9; padding: 20px; border: 1px solid #ddd; border-radius: 5px; margin-top: 10px;"
+                     th:text="${report.message}">
+                </div>
+            </div>
+        </section>
+
+        <div class="button-group" style="margin-top: 20px;">
+            <a th:href="@{/my-page/reports}" class="button secondary">一覧に戻る</a>
+        </div>
+    </div>
+</body>
+</html>

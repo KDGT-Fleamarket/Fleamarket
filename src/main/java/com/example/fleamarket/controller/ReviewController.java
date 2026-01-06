@@ -36,7 +36,7 @@ public class ReviewController {
 		AppOrder order = appOrderService.getOrderById(orderId)
 				.orElseThrow(() -> new IllegalArgumentException("Order not found."));
 		model.addAttribute("order", order);
-		return "review_form";
+		return "user/reviews/create";
 	}
 
 	@PostMapping

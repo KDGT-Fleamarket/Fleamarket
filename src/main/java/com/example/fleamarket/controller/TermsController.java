@@ -32,7 +32,7 @@ public class TermsController {
 				.findFirstByEffectiveDateLessThanEqualOrderByEffectiveDateDescTermsVersionDesc(LocalDate.now())
 				.orElseThrow();
 		model.addAttribute("terms", latest);
-		return "terms";
+		return "user/terms";
 	}
 
 	@PostMapping("/terms/agree")
@@ -51,6 +51,6 @@ public class TermsController {
 
 		// 閲覧専用フラグを立てる
 		model.addAttribute("isViewOnly", true);
-		return "terms"; // 同じHTMLテンプレートを使い回す
+		return "user/terms"; // 同じHTMLテンプレートを使い回す
 	}
 }
