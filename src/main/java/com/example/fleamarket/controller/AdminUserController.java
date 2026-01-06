@@ -1,5 +1,6 @@
 package com.example.fleamarket.controller;
 
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 
@@ -84,5 +85,23 @@ public class AdminUserController {
 	public String unban(@PathVariable Long id) {
 		service.unbanUser(id);
 		return "redirect:/admin/users/" + id + "?unbanned";
+	}
+
+	@GetMapping("/create")
+	public String showCreateForm(Model model) {
+		model.addAttribute("user", new User());
+		return "admin/users/create";
+	}
+
+	@PostMapping("/create")
+	public String createAdminUser(User user) {
+		user.setRole("ADMIN");
+		user.setEnabled(true);
+		user.setBanned(false);
+		user.setLastLoginAt(LocalDateTime.now());
+		user.setTermsAgreedAt(LocalDateTime.now()); // 管理者作成なので即時同意扱い
+
+		users.save(user);
+		return "redirect:/admin/users/list?created";
 	}
 }
