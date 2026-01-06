@@ -21,6 +21,7 @@
                     <th>施行日</th>
                     <th>内容（抜粋）</th>
                     <th>状態</th>
+					<th>操作</th>
                 </tr>
             </thead>
             <tbody>
@@ -33,6 +34,9 @@
                               style="color: green; font-weight: bold;">施行中</span>
                         <span th:if="${t.effectiveDate.isAfter(T(java.time.LocalDate).now())}" 
                               style="color: blue;">予約中</span>
+                    </td>
+					<td>
+                        <a th:href="@{/admin/terms/detail/{id}(id=${t.termsVersion})}" class="button small">詳細</a>
                     </td>
                 </tr>
             </tbody>

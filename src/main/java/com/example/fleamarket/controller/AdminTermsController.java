@@ -5,6 +5,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -41,5 +42,15 @@ public class AdminTermsController {
 		// terms.getEffectiveDate() で管理者が設定した施行日時が保存される
 		termsRepository.save(terms);
 		return "redirect:/admin/terms/list?success";
+	}
+
+	@GetMapping("/detail/{termsVersion}")
+	public String detail(@PathVariable("termsVersion") Long termsVersion, Model model) {
+		// findById は内部的に @Id（terms_version）を使って検索します
+		Terms terms = termsRepository.findById(termsVersion)
+				.orElseThrow(() -> new IllegalArgumentException("Invalid terms Version:" + termsVersion));
+
+		model.addAttribute("terms", terms);
+		return "admin/terms/detail";
 	}
 }

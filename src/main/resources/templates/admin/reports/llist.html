@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>報告・お問い合わせ管理</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <div class="container">
+        <h1>お問い合わせ・報告 管理</h1>
+
+        <div class="action-bar" style="margin-bottom: 20px;">
+            <a th:href="@{/admin/dashboard}" class="button secondary">ダッシュボードに戻る</a>
+        </div>
+
+        <table border="1" style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr style="background-color: #f4f4f4;">
+                    <th>ID</th>
+                    <th>報告者</th>
+                    <th>種類</th>
+                    <th>内容（抜粋）</th>
+                    <th>ステータス</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="r : ${reports}">
+                    <td th:text="${r.id}"></td>
+                    <td th:text="${r.reporter.name}"></td>
+                    <td th:text="${r.reportType}"></td>
+                    <td th:text="${#strings.abbreviate(r.message, 40)}"></td>
+                    <td>
+                        <span th:text="${r.status}" 
+                              th:style="${r.status == '未処理' ? 'color: red; font-weight: bold;' : 'color: #333;'}">
+                        </span>
+                    </td>
+                    <td>
+                        <a th:href="@{/admin/reports/detail/{id}(id=${r.id})}" class="button small">確認・返信</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

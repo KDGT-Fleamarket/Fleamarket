@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<htmlxmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+
+	<div class="container">
+	    <h2>お問い合わせ詳細</h2>
+	    <p>送信者: <span th:text="${report.reporter.name}"></span></p>
+	    
+	    <form th:action="@{/admin/reports/update}" method="post">
+	        <input type="hidden" name="id" th:value="${report.id}">
+	        
+	        <div>
+	            <label>ステータス</label>
+	            <select name="status">
+	                <option th:selected="${report.status == '未処理'}">未処理</option>
+	                <option th:selected="${report.status == '対応中'}">対応中</option>
+	                <option th:selected="${report.status == '対処済'}">対処済</option>
+	            </select>
+	        </div>
+
+	        <div>
+	            <label>内容（返信を追記してください）</label>
+	            <textarea name="message" th:text="${report.message}" rows="10" style="width:100%"></textarea>
+	        </div>
+	        
+	        <button type="submit" class="button">更新する</button>
+	    </form>
+	</div>
+</body>
+</html>

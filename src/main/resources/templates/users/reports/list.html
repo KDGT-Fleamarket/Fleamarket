@@ -1,0 +1,46 @@
+<!--追加ページ-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>お問い合わせ履歴</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <div class="container">
+        <h1>お問い合わせ・報告履歴</h1>
+        
+        <div class="action-bar" style="margin-bottom: 20px;">
+            <a th:href="@{/reports/create}" class="button">＋ 新規お問い合わせ</a>
+            <a th:href="@{/mypage}" class="button secondary">マイページに戻る</a>
+        </div>
+
+        <table border="1" style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr style="background-color: #f4f4f4;">
+                    <th>投稿日時</th>
+                    <th>種類</th>
+                    <th>内容（抜粋）</th>
+                    <th>ステータス</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="r : ${reports}">
+                    <td th:text="${#temporals.format(r.createdAt, 'yyyy/MM/dd HH:mm')}"></td>
+                    <td th:text="${r.reportType}"></td>
+                    <td>
+                        <a th:href="@{/user/reports/detail/{id}(id=${r.id})}" 
+                           th:text="${#strings.abbreviate(r.message, 30)}"></a>
+                    </td>
+                    <td>
+                        <span th:text="${r.status}" 
+                              th:classappend="${r.status == '未処理' ? 'status-red' : (r.status == '対応中' ? 'status-blue' : 'status-green')}"
+                              style="font-weight: bold; padding: 2px 5px; border-radius: 3px;">
+                        </span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
