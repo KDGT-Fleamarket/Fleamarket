@@ -37,8 +37,7 @@
 					<!-- 出品者 -->
 					<td th:text="${order.item.seller.name}"></td>
 					<!-- 価格 -->
-					<td th:text="'¥' + ${#numbers.formatDecimal(
-							order.price, 0, 'COMMA', 0, 'POINT')}"></td>
+					<td th:text="${order.price != null ? '¥' + #numbers.formatDecimal(order.price, 0, 'COMMA', 0, 'POINT') : '¥' + #numbers.formatDecimal(order.item.price, 0, 'COMMA', 0, 'POINT')}"></td>
 					<!-- 注文ステータス -->
 					<td th:text=" ${order.status}"></td>
 					<!-- レビュー -->
@@ -60,9 +59,9 @@
 				        <div style="display: flex; gap: 5px;">
 				            <a th:href="@{/my-page/orders/detail/{id}(id=${order.id})}" class="button small">詳細</a>
 				            
-				            <a th:if="${!reviewMap[order.id] && order.status == '発送済'}" 
-				               th:href="@{/reviews/new/{id}(id=${order.id})}" 
-				               class="button small">評価する</a>
+							<a th:if="${reviewMap.get(order.id) == null && order.status == '発送済'}" 
+							   th:href="@{/reviews/new/{id}(id=${order.id})}" 
+							   class="button small">評価する</a>
 				        </div>
 				    </td>
 				</tr>

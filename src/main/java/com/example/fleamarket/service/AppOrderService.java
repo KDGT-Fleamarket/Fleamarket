@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,23 +30,34 @@ public class AppOrderService {
 	private final ItemService itemService;
 	private final StripeService stripeService;
 	private final LineNotifyService lineNotifyService;
+	private final SimpMessagingTemplate messagingTemplate;
 
 	public AppOrderService(AppOrderRepository appOrderRepository, ItemRepository itemRepository,
-			ItemService itemService, StripeService stripeService, LineNotifyService lineNotifyService) {
+			ItemService itemService, StripeService stripeService, LineNotifyService lineNotifyService,
+			SimpMessagingTemplate messagingTemplate) {
 		this.appOrderRepository = appOrderRepository;
 		this.itemRepository = itemRepository;
 		this.itemService = itemService;
 		this.stripeService = stripeService;
 		this.lineNotifyService = lineNotifyService;
+		this.messagingTemplate = messagingTemplate;
 	}
 
 	@Transactional
 	public PaymentIntent initiatePurchase(Long itemId, User buyer) throws StripeException {
+		int updatedCount = itemRepository.updateStatusIfAvailable(itemId, "決済待ち");
+
+		if (updatedCount == 0) {
+			throw new IllegalStateException("この商品は既に他のお客様が購入手続き中、または売却済みです。");
+		}
+
+		messagingTemplate.convertAndSend("/topic/item/" + itemId + "/status", "決済待ち");
+
 		Item item = itemRepository.findById(itemId)
 				.orElseThrow(() -> new IllegalArgumentException("Item not found"));
 
-		if (!"出品中".equals(item.getStatus())) {
-			throw new IllegalStateException("Item is not available for purchase.");
+		if ("売却済".equals(item.getStatus())) {
+			throw new IllegalStateException("この商品は既に売却済みです。");
 		}
 
 		// Create a PaymentIntent with Stripe
@@ -165,7 +177,9 @@ public class AppOrderService {
 
 		if (!expiredOrders.isEmpty()) {
 			for (AppOrder order : expiredOrders) {
-
+				Item item = order.getItem();
+				item.setStatus("出品中"); // ステータスを戻す
+				itemRepository.save(item);
 				appOrderRepository.delete(order);
 			}
 			System.out.println(expiredOrders.size() + "件の期限切れ注文を削除しました。");

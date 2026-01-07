@@ -66,7 +66,7 @@ public class AppOrderController {
 		model.addAttribute("clientSecret", clientSecret);
 		model.addAttribute("itemId", itemId);
 		model.addAttribute("stripePublicKey", stripePublicKey);
-		return "payment_confirmation";
+		return "user/payment_confirmation";
 	}
 
 	@GetMapping("/complete-purchase") // Endpoint called by Stripe.js after payment is confirmed on client-side
