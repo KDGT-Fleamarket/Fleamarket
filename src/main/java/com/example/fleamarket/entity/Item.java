@@ -50,6 +50,6 @@ public class Item {
 	@Column(name = "image_url", columnDefinition = "TEXT")
 	private String imageUrl;
 
-	@Column(name = "created_at", nullable = false) // New field
+	@Column(name = "created_at", nullable = false)
 	private LocalDateTime createdAt = LocalDateTime.now();
 }

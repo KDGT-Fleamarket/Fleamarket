@@ -54,7 +54,7 @@
 				<span th:if="${sellerAverageRating}">(平均評価: <span th:text="${sellerAverageRating}"></span>)</span>
 			</p>
 			<!-- 商品の現在ステータスを表示 -->
-			<p>ステータス: <span th:text="${item.status}"></span></p>
+			<p>ステータス: <span id="item-status-display" th:text="${item.status}"></span></p>
 			<!-- アクションボタン群 -->
 			<div class="button-group">
 				<!-- 自分以外が出品した「出品中」商品だけ購入ボタンを表示 -->
@@ -91,7 +91,7 @@
 		<!-- チャット見出し -->
 		<h2>チャット</h2>
 		<!-- チャットの表示ボックス -->
-		<div class="chat-box">
+		<div class="chat-box" id="chat-messages">
 			<!-- チャット履歴を時系列で描画。送信者が自分なら my-message クラスを付与 -->
 			<div th:each="chat : ${chats}" class="chat-message" 
 					th:classappend="${chat.sender.email == #authentication.name ? 
@@ -112,10 +112,10 @@
 			</div>
 		</div>
 		<!-- チャット送信フォーム -->
-		<form th:action="@{/chat/{itemId}(itemId=${item.id})}" 
+		<form id="chatForm" th:action="@{/chat/{itemId}(itemId=${item.id})}" 
 				method="post" class="chat-form">
 			<!-- 入力テキストエリア（必須） -->
-			<textarea name="message" placeholder="メッセージを入力してください" 
+			<textarea id="messageInput" name="message" placeholder="メッセージを入力してください" 
 					required></textarea>
 			<!-- 送信ボタン -->
 			<button type="submit">送信</button>
@@ -126,6 +126,78 @@
 			<a th:href="@{/items}" class="button secondary">商品一覧に戻る</a>
 		</div>
 	</div>
+	
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.1/sockjs.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+	
+	<script th:inline="javascript">
+	    var stompClient = null;
+	    var itemId = /*[[${item.id}]]*/ 0; 
+	    var currentUserEmail = /*[[${#authentication.name}]]*/ 'guest';
+
+	    function connect() {
+	        var socket = new SockJS('/ws-chat');
+	        stompClient = Stomp.over(socket);
+	        stompClient.connect({}, function (frame) {
+	            console.log('Connected: ' + frame);
+	            
+	            // チャットメッセージの購読
+	            stompClient.subscribe('/topic/item/' + itemId, function (messageOutput) {
+	                var messageBody = JSON.parse(messageOutput.body);
+	                displayNewMessage(messageBody); 
+	            });
+
+	            // ステータス更新（決済ロック）の購読
+	            stompClient.subscribe('/topic/item/' + itemId + '/status', function (status) {
+	                console.log("ステータス更新受信:", status.body);
+	                
+	                // 表示上のステータス文字（「出品中」→「決済待ち」）を書き換える
+	                var statusDisplay = document.getElementById('item-status-display');
+	                if (statusDisplay) {
+	                    statusDisplay.innerText = status.body;
+	                }
+	                
+	                // 購入ボタンを非表示にする（「決済待ち」または「売却済」なら消す）
+	                var buyForm = document.querySelector('form[action*="initiate-purchase"]');
+	                if (buyForm && (status.body === "決済待ち" || status.body === "購入済")) {
+	                    buyForm.style.display = 'none';
+	                }
+	            });
+	        });
+	    }
+
+	    function displayNewMessage(message) {
+	        var chatArea = document.getElementById('chat-messages');
+	        if (!chatArea) return;
+
+	        var messageElement = document.createElement('div');
+	        var isMe = (message.senderEmail === currentUserEmail);
+	        messageElement.className = 'chat-message ' + (isMe ? 'my-message' : 'other-message');
+	        
+	        messageElement.innerHTML = 
+	            '<span class="sender-name">' + (message.senderName || 'ユーザー') + '</span> ' +
+	            '<span class="message-time">' + (message.createdAt || '') + '</span>' +
+	            '<p>' + message.content + '</p>';
+	        
+	        chatArea.appendChild(messageElement);
+	        chatArea.scrollTop = chatArea.scrollHeight;
+	    }
+
+	    document.getElementById('chatForm').addEventListener('submit', function(e) {
+	        e.preventDefault();
+	        var input = document.getElementById('messageInput');
+	        if (input.value && stompClient) {
+	            var msg = {
+	                senderEmail: currentUserEmail,
+	                content: input.value
+	            };
+	            stompClient.send("/app/chat/" + itemId, {}, JSON.stringify(msg));
+	            input.value = '';
+	        }
+	    });
+
+	    window.onload = connect;
+	</script>
 </body>
 
 </html>

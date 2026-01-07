@@ -2,7 +2,6 @@ package com.example.fleamarket.controller;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -72,12 +71,11 @@ public class UserController {
 
 		List<AppOrder> orders = appOrderService.getOrdersByBuyer(currentUser);
 
-		Map<Long, Review> reviewMap = orders.stream()
-				.filter(order -> !"決済待ち".equals(order.getStatus()))
-				.collect(Collectors.toMap(
-						AppOrder::getId,
-						order -> reviewService.getReviewByOrderId(order.getId()),
-						(existing, replacement) -> existing));
+		Map<Long, Review> reviewMap = new java.util.HashMap<>();
+		for (AppOrder order : orders) {
+			Review review = reviewService.getReviewByOrderId(order.getId());
+			reviewMap.put(order.getId(), review);
+		}
 
 		model.addAttribute("myOrders", orders);
 		model.addAttribute("reviewMap", reviewMap);
@@ -102,14 +100,11 @@ public class UserController {
 
 		List<AppOrder> sales = appOrderService.getOrdersBySeller(currentUser);
 
-		// Key: 注文ID, Value: Reviewオブジェクト（存在しなければnull）のMapを作成
-		Map<Long, Review> reviewMap = sales.stream()
-				.filter(order -> !"決済待ち".equals(order.getStatus()))
-				.collect(Collectors.toMap(
-						AppOrder::getId,
-						order -> reviewService.getReviewByOrderId(order.getId()),
-						(existing, replacement) -> existing // 重複回避用
-				));
+		Map<Long, Review> reviewMap = new java.util.HashMap<>();
+		for (AppOrder order : sales) {
+			Review review = reviewService.getReviewByOrderId(order.getId());
+			reviewMap.put(order.getId(), review);
+		}
 
 		model.addAttribute("mySales", sales);
 		model.addAttribute("reviewMap", reviewMap);

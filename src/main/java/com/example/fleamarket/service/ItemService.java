@@ -85,4 +85,14 @@ public class ItemService {
 			itemRepository.save(item);
 		});
 	}
+
+	public void lockItemForPayment(Long itemId) {
+		// ステータスを「決済待ち」に更新。成功すれば 1 が返る。
+		int updatedCount = itemRepository.updateStatusIfAvailable(itemId, "決済待ち");
+
+		if (updatedCount == 0) {
+			// 更新できなかった＝既に誰かがステータスを変えてしまった
+			throw new IllegalStateException("この商品は既に他のお客様が購入手続き中、または売却済みです。");
+		}
+	}
 }
