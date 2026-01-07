@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <htmlxmlns:th="http://www.thymeleaf.org">
 <head>
-<meta charset="UTF-8">
-<title>Insert title here</title>
+	<meta charset="UTF-8">
+	<title>お問い合わせ詳細</title>
+	<link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
 
@@ -29,6 +30,7 @@
 	        
 	        <button type="submit" class="button">更新する</button>
 	    </form>
+		<p><a th:href="@{/admin/reports/list}" class="button secondary">一覧に戻る</a></p>
 	</div>
 </body>
 </html>

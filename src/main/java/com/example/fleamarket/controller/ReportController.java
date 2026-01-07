@@ -55,4 +55,10 @@ public class ReportController {
 		model.addAttribute("report", report);
 		return "user/reports/detail";
 	}
+
+	@PostMapping("/{id}/complete")
+	public String completeReport(@PathVariable("id") Long id) {
+		reportService.completeReport(id);
+		return "redirect:/my-page";
+	}
 }

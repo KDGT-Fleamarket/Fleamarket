@@ -54,4 +54,20 @@ public class ReportService {
 		report.setMessage(message);
 		reportRepository.save(report);
 	}
+
+	// ユーザー用
+	public List<Report> getNotifiableReports(User user) {
+		// ステータスが「対処済」のものを取得
+		return reportRepository.findByReporterAndStatus(user, "対処済");
+	}
+
+	// ユーザー用
+	@Transactional
+	public void completeReport(Long id) {
+		Report report = reportRepository.findById(id)
+				.orElseThrow(() -> new RuntimeException("Report not found"));
+
+		report.setStatus("完了");
+		reportRepository.save(report);
+	}
 }

@@ -14,6 +14,9 @@ public interface ReportRepository extends JpaRepository<Report, Long> {
 	// 【USER用】自分が投稿したものを新しい順に取得
 	List<Report> findByReporterOrderByCreatedAtDesc(User reporter);
 
+	// 自分が報告したレポートの中で、特定のステータスのものを取得
+	List<Report> findByReporterAndStatus(User reporter, String status);
+
 	// 【ADMIN用】全ての報告を新しい順に取得
 	@Query("""
 			    SELECT r FROM Report r
