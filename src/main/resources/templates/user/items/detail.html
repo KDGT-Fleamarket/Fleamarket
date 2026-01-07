@@ -45,10 +45,13 @@
 							item.category.name : '未分類'}"></span>
 			</p>
 			<!-- 出品者名と平均評価がある場合は併記 -->
-			<p>出品者: <span th:text="${item.seller.name}"></span>
+			<p>出品者：
+			    <a th:href="@{/items/users/detail/{id}(id=${item.seller.id})}" 
+			       th:text="${item.seller.name}" 
+			       style="font-weight: bold; color: #007bff; text-decoration: underline;">
+			    </a>
 				<!-- 平均評価がモデルに存在する場合のみ表示 -->
-				<span th:if="${sellerAverageRating}">(平均評価: 
-					<span th:text="${sellerAverageRating}"></span>)</span>
+				<span th:if="${sellerAverageRating}">(平均評価: <span th:text="${sellerAverageRating}"></span>)</span>
 			</p>
 			<!-- 商品の現在ステータスを表示 -->
 			<p>ステータス: <span th:text="${item.status}"></span></p>

@@ -6,7 +6,7 @@
 
 <head>
 	<meta charset="UTF-8">
-	<title>購入履歴 - フリマアプリ</title>
+	<title>購入履歴</title>
 	<link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 
@@ -25,6 +25,8 @@
 					<th>出品者</th>
 					<th>価格</th>
 					<th>ステータス</th>
+					<th>レビュー</th>
+					<th>操作</th>
 				</tr>
 			</thead>
 
@@ -39,11 +41,35 @@
 							order.price, 0, 'COMMA', 0, 'POINT')}"></td>
 					<!-- 注文ステータス -->
 					<td th:text=" ${order.status}"></td>
+					<!-- レビュー -->
+					<td>
+						<div th:with="review=${reviewMap[order.id]}">
+				            <span th:if="${review != null}">
+				                <span th:each="i : ${#numbers.sequence(1, 5)}" 
+				                      th:text="${i <= review.rating ? '★' : '☆'}" 
+				                      style="color: #f1c40f;"></span>
+				                <span th:text="${review.rating}" style="font-size: 0.9em;"></span>
+				            </span>
+				            <span th:unless="${review != null}" class="status-red" style="font-size: 0.8em;">
+				                未投稿
+				            </span>
+				        </div>
+				    </td>
+					<!-- 詳細/レビューリンク -->
+				    <td>
+				        <div style="display: flex; gap: 5px;">
+				            <a th:href="@{/my-page/orders/detail/{id}(id=${order.id})}" class="button small">詳細</a>
+				            
+				            <a th:if="${!reviewMap[order.id] && order.status == '発送済'}" 
+				               th:href="@{/reviews/new/{id}(id=${order.id})}" 
+				               class="button small">評価する</a>
+				        </div>
+				    </td>
 				</tr>
 				
 				<!-- 空の場合 -->
 				<tr th:if="${#lists.isEmpty(myOrders)}">
-					<td colspan="4">購入した商品はありません。</td>
+					<td colspan="6">購入した商品はありません。</td>
 				</tr>
 			</tbody>
 		</table>

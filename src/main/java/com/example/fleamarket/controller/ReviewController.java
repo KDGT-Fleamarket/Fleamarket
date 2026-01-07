@@ -32,10 +32,16 @@ public class ReviewController {
 	}
 
 	@GetMapping("/new/{orderId}")
-	public String showReviewForm(@PathVariable("orderId") Long orderId, Model model) {
-		AppOrder order = appOrderService.getOrderById(orderId)
-				.orElseThrow(() -> new IllegalArgumentException("Order not found."));
+	public String showReviewForm(@PathVariable("orderId") Long orderId,
+			@AuthenticationPrincipal UserDetails userDetails,
+			Model model) {
+		AppOrder order = appOrderService.getOrderById(orderId);
+		if (!order.getBuyer().getEmail().equalsIgnoreCase(userDetails.getUsername())) {
+			return "redirect:/my-page/orders";
+		}
+
 		model.addAttribute("order", order);
+		model.addAttribute("review", new com.example.fleamarket.entity.Review());
 		return "user/reviews/create";
 	}
 

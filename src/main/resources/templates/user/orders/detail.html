@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<htmlxmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+	<title>購入詳細</title>
+	<link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+	<section class="info-card">
+	    <h3>注文情報</h3>
+	    <p>商品名：<span th:text="${order.item.name}"></span></p>
+		<!-- 画像/価格/出品者なども必要なら書く -->
+	    <p>ステータス：<span th:text="${order.status}"></span></p>
+	    
+	    <div th:if="${review == null && order.status == '発送済'}" style="margin-top: 20px;">
+	        <p>商品の受け取りはお済みですか？出品者を評価しましょう。</p>
+	        <a th:href="@{/reviews/create(orderId=${order.id})}" class="button">評価を投稿する</a>
+	    </div>
+
+	    <div th:if="${review != null}" class="review-display">
+	        <h3>投稿済みの評価</h3>
+	        <p>評価：<span th:text="${review.rating}"></span> / 5</p>
+	        <p th:text="${review.comment}"></p>
+	    </div>
+	</section>
+	
+</body>
+</html>
