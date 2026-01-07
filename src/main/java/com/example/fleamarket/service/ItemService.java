@@ -8,6 +8,7 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -30,16 +31,18 @@ public class ItemService {
 	}
 
 	public Page<Item> searchItems(String keyword, Long categoryId, int page, int size) {
-		Pageable pageable = PageRequest.of(page, size);
+		Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+		String status = "出品中";
+
 		if (keyword != null && !keyword.isEmpty() && categoryId != null) {
-			return itemRepository.findByNameContainingIgnoreCaseAndCategoryIdAndStatus(keyword, categoryId, "出品中",
+			return itemRepository.findByNameContainingIgnoreCaseAndCategoryIdAndStatus(keyword, categoryId, status,
 					pageable);
 		} else if (keyword != null && !keyword.isEmpty()) {
-			return itemRepository.findByNameContainingIgnoreCaseAndStatus(keyword, "出品中", pageable);
+			return itemRepository.findByNameContainingIgnoreCaseAndStatus(keyword, status, pageable);
 		} else if (categoryId != null) {
-			return itemRepository.findByCategoryIdAndStatus(categoryId, "出品中", pageable);
+			return itemRepository.findByCategoryIdAndStatus(categoryId, status, pageable);
 		} else {
-			return itemRepository.findByStatus("出品中", pageable);
+			return itemRepository.findByStatus(status, pageable);
 		}
 	}
 

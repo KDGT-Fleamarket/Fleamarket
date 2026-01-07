@@ -48,6 +48,10 @@ public class UserController {
 		User currentUser = userService.getUserByEmail(userDetails.getUsername())
 				.orElseThrow(() -> new RuntimeException("User not found"));
 
+		model.addAttribute("noticeReports", reportService.getNotifiableReports(currentUser));
+		model.addAttribute("noticeSales", appOrderService.getActionRequiredSales(currentUser));
+		model.addAttribute("noticeOrders", appOrderService.getActionRequiredOrders(currentUser));
+
 		model.addAttribute("user", currentUser);
 		return "user/my_page";
 	}

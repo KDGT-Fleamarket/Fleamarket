@@ -8,6 +8,15 @@
 <body>
     <div class="container">
         <h1>お問い合わせ・報告 詳細</h1>
+		
+		<div th:if="${report.status == '対処済'}" class="action-box" style="margin-top: 20px; padding: 15px; background: #f9f9f9; border: 1px dashed #ccc;">
+		    <p>この回答を確認しましたか？確認ボタンを押すとマイページの通知から消えます。</p>
+		    <form th:action="@{/reports/{id}/complete(id=${report.id})}" method="post">
+		        <button type="submit" class="button">確認しました</button>
+		    </form>
+		</div>
+
+		<p th:if="${report.status == '完了'}" class="status-gray">この案件は完了しています。</p>
 
         <section class="info-card">
             <p><strong>投稿日時:</strong> <span th:text="${#temporals.format(report.createdAt, 'yyyy/MM/dd HH:mm')}"></span></p>

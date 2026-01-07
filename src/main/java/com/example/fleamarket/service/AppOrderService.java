@@ -171,4 +171,18 @@ public class AppOrderService {
 			System.out.println(expiredOrders.size() + "件の期限切れ注文を削除しました。");
 		}
 	}
+
+	// 出品者向け：発送作業が必要な注文
+	public List<AppOrder> getActionRequiredSales(User seller) {
+		return appOrderRepository.findByItem_Seller(seller).stream()
+				.filter(o -> "購入済".equals(o.getStatus())) // ステータスが「購入済」＝発送待ち
+				.toList();
+	}
+
+	// 購入者向け：受取評価が必要な注文
+	public List<AppOrder> getActionRequiredOrders(User buyer) {
+		return appOrderRepository.findByBuyer(buyer).stream()
+				.filter(o -> "発送済".equals(o.getStatus())) // ステータスが「発送済」＝受取・評価待ち
+				.toList();
+	}
 }
