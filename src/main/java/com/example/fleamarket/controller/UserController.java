@@ -1,12 +1,19 @@
 package com.example.fleamarket.controller;
 
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.example.fleamarket.entity.AppOrder;
+import com.example.fleamarket.entity.Review;
 import com.example.fleamarket.entity.User;
 import com.example.fleamarket.service.AppOrderService;
 import com.example.fleamarket.service.FavoriteService;
@@ -59,8 +66,29 @@ public class UserController {
 		User currentUser = userService.getUserByEmail(userDetails.getUsername())
 				.orElseThrow(() -> new RuntimeException("User not found"));
 
-		model.addAttribute("myOrders", appOrderService.getOrdersByBuyer(currentUser));
+		List<AppOrder> orders = appOrderService.getOrdersByBuyer(currentUser);
+
+		Map<Long, Review> reviewMap = orders.stream()
+				.filter(order -> !"決済待ち".equals(order.getStatus()))
+				.collect(Collectors.toMap(
+						AppOrder::getId,
+						order -> reviewService.getReviewByOrderId(order.getId()),
+						(existing, replacement) -> existing));
+
+		model.addAttribute("myOrders", orders);
+		model.addAttribute("reviewMap", reviewMap);
 		return "user/orders/list";
+	}
+
+	@GetMapping("/orders/detail/{id}")
+	public String orderDetail(@PathVariable("id") Long id, @AuthenticationPrincipal UserDetails userDetails,
+			Model model) {
+		AppOrder order = appOrderService.getOrderById(id);
+		Review review = reviewService.getReviewByOrderId(id);
+
+		model.addAttribute("order", order);
+		model.addAttribute("review", review); // reviewがあれば表示、なければnull
+		return "user/orders/detail";
 	}
 
 	@GetMapping("/sales")
@@ -68,8 +96,31 @@ public class UserController {
 		User currentUser = userService.getUserByEmail(userDetails.getUsername())
 				.orElseThrow(() -> new RuntimeException("User not found"));
 
-		model.addAttribute("mySales", appOrderService.getOrdersBySeller(currentUser));
+		List<AppOrder> sales = appOrderService.getOrdersBySeller(currentUser);
+
+		// Key: 注文ID, Value: Reviewオブジェクト（存在しなければnull）のMapを作成
+		Map<Long, Review> reviewMap = sales.stream()
+				.filter(order -> !"決済待ち".equals(order.getStatus()))
+				.collect(Collectors.toMap(
+						AppOrder::getId,
+						order -> reviewService.getReviewByOrderId(order.getId()),
+						(existing, replacement) -> existing // 重複回避用
+				));
+
+		model.addAttribute("mySales", sales);
+		model.addAttribute("reviewMap", reviewMap);
 		return "user/sales/list";
+	}
+
+	@GetMapping("/sales/detail/{id}")
+	public String salesDetail(@PathVariable("id") Long id, @AuthenticationPrincipal UserDetails userDetails,
+			Model model) {
+		AppOrder order = appOrderService.getOrderById(id);
+		Review review = reviewService.getReviewByOrderId(id);
+
+		model.addAttribute("order", order);
+		model.addAttribute("review", review);
+		return "user/sales/detail";
 	}
 
 	@GetMapping("/favorites")

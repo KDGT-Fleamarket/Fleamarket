@@ -16,5 +16,8 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 
 	Optional<Review> findByOrderId(Long orderId);
 
-	List<Review> findByReviewer(User reviewer); // Add this line
+	List<Review> findByReviewer(User reviewer);
+
+	// 管理者向け：最新のレビューから順に全て取得
+	List<Review> findAllByOrderByCreatedAtDesc();
 }

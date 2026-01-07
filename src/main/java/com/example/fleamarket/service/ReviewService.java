@@ -52,6 +52,10 @@ public class ReviewService {
 		return reviewRepository.findBySeller(seller);
 	}
 
+	public long getReviewCountForSeller(User seller) {
+		return reviewRepository.findBySeller(seller).size();
+	}
+
 	public OptionalDouble getAverageRatingForSeller(User seller) {
 		return reviewRepository.findBySeller(seller).stream()
 				.mapToInt(Review::getRating)
@@ -60,5 +64,9 @@ public class ReviewService {
 
 	public List<Review> getReviewsByReviewer(User reviewer) {
 		return reviewRepository.findByReviewer(reviewer);
+	}
+
+	public Review getReviewByOrderId(Long orderId) {
+		return reviewRepository.findByOrderId(orderId).orElse(null);
 	}
 }

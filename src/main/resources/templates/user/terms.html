@@ -8,6 +8,7 @@
 <body>
 	<div class="container">
 	    <h1>利用規約</h1>
+		<div th:text="${terms.effectiveDate}"></div>
 		<div class="terms-box" th:text="${terms.termsContent}" 
 		         style="white-space: pre-wrap; border: 1px solid #ccc; padding: 20px; background: #fff;">
 		    </div>

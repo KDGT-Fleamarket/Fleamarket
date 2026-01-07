@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>販売詳細</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <div class="container">
+        <h1>販売詳細</h1>
+
+        <section class="info-card">
+            <h3>注文・商品情報</h3>
+            <table class="detail-table">
+                <tr><th>注文ID</th><td th:text="${order.id}"></td></tr>
+                <tr><th>商品名</th><td th:text="${order.item.name}"></td></tr>
+                <tr><th>販売価格</th><td th:text="${order.price} + '円'"></td></tr>
+                <tr><th>ステータス</th><td th:text="${order.status}"></td></tr>
+                <tr><th>販売日時</th><td th:text="${#temporals.format(order.createdAt, 'yyyy/MM/dd HH:mm')}"></td></tr>
+                <tr><th>購入者</th><td th:text="${order.buyer.name} + ' 様'"></td></tr>
+            </table>
+        </section>
+
+        <section th:if="${order.item.imageUrl}" class="info-card" style="margin-top: 20px; text-align: center;">
+            <img th:src="${order.item.imageUrl}" alt="商品画像" style="max-width: 300px; border-radius: 8px;">
+        </section>
+
+        <section class="info-card" style="margin-top: 20px;">
+            <h3>購入者からの評価</h3>
+            <div th:if="${review != null}" class="review-display">
+                <div class="rating">
+                    <span th:each="i : ${#numbers.sequence(1, 5)}" 
+                          th:text="${i <= review.rating ? '★' : '☆'}" 
+                          style="color: #f1c40f; font-size: 1.2em;"></span>
+                    <span th:text="' (' + ${review.rating} + ')' "></span>
+                </div>
+                <div class="review-comment" style="margin-top: 10px; background: #f9f9f9; padding: 15px; border-radius: 5px; border-left: 4px solid #f1c40f;">
+                    <p style="white-space: pre-wrap;" th:text="${review.comment}"></p>
+                    <small th:text="${#temporals.format(review.createdAt, 'yyyy/MM/dd HH:mm')} + ' に受領'"></small>
+                </div>
+            </div>
+            <div th:unless="${review != null}" class="no-review">
+                <p>まだ購入者からの評価はありません。</p>
+            </div>
+        </section>
+
+        <div class="button-group" style="margin-top: 20px;">
+            <a th:href="@{/my-page/sales}" class="button secondary">販売履歴一覧に戻る</a>
+        </div>
+    </div>
+</body>
+</html>

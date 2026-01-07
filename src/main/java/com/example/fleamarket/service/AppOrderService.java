@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -58,6 +59,7 @@ public class AppOrderService {
 		appOrder.setBuyer(buyer);
 		appOrder.setPrice(item.getPrice());
 		appOrder.setStatus("決済待ち"); // New status for pending payment
+		appOrder.setPaymentIntentId(paymentIntent.getId());
 		appOrder.setCreatedAt(LocalDateTime.now()); // Set creation time
 		appOrderRepository.save(appOrder);
 
@@ -72,7 +74,7 @@ public class AppOrderService {
 			// Find the order associated with this payment intent (you might need to store paymentIntentId in AppOrder entity)
 			// For now, let's assume we find the latest pending order for simplicity
 			AppOrder appOrder = appOrderRepository.findAll().stream()
-					.filter(o -> "決済待ち".equals(o.getStatus()))
+					.filter(o -> paymentIntentId.equals(o.getPaymentIntentId()))
 					.findFirst()
 					.orElseThrow(() -> new IllegalStateException("No pending order found for this payment."));
 
@@ -123,11 +125,11 @@ public class AppOrderService {
 		//		}
 	}
 
-	public Optional<AppOrder> getOrderById(Long orderId) {
-		return appOrderRepository.findById(orderId);
+	public AppOrder getOrderById(Long orderId) {
+		return appOrderRepository.findById(orderId)
+				.orElseThrow(() -> new IllegalArgumentException("注文が見つかりません ID: " + orderId));
 	}
 
-	// Method to get the latest completed order ID for redirection
 	public Optional<Long> getLatestCompletedOrderId() {
 		return appOrderRepository.findAll().stream()
 				.filter(o -> "購入済".equals(o.getStatus()))
@@ -149,5 +151,24 @@ public class AppOrderService {
 				.filter(order -> order.getCreatedAt().toLocalDate().isAfter(startDate.minusDays(1))
 						&& order.getCreatedAt().toLocalDate().isBefore(endDate.plusDays(1))) // Use order.getCreatedAt()
 				.collect(Collectors.groupingBy(AppOrder::getStatus, Collectors.counting()));
+	}
+
+	@Transactional
+	@Scheduled(fixedRate = 600000) // 10分ごとに実行 (単位: ミリ秒)
+	public void deleteExpiredOrders() {
+		LocalDateTime threshold = LocalDateTime.now().minusMinutes(30);
+		// 「決済待ち」かつ「30分以上前」の注文を取得
+		List<AppOrder> expiredOrders = appOrderRepository.findAll().stream()
+				.filter(o -> "決済待ち".equals(o.getStatus()))
+				.filter(o -> o.getCreatedAt().isBefore(threshold))
+				.toList();
+
+		if (!expiredOrders.isEmpty()) {
+			for (AppOrder order : expiredOrders) {
+
+				appOrderRepository.delete(order);
+			}
+			System.out.println(expiredOrders.size() + "件の期限切れ注文を削除しました。");
+		}
 	}
 }

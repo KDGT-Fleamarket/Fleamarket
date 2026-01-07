@@ -226,4 +226,24 @@ public class ItemController {
 		}
 		return "redirect:/items/{id}";
 	}
+
+	@GetMapping("/users/detail/{id}")
+	public String userDetail(@PathVariable("id") Long id, Model model) {
+		User user = userService.getUserById(id)
+				.orElseThrow(() -> new RuntimeException("User not found"));
+
+		// そのユーザーの全出品リスト（全ステータス）
+		List<Item> allItems = itemService.getItemsBySeller(user);
+
+		// 平均評価と件数
+		double averageRating = reviewService.getAverageRatingForSeller(user).orElse(0.0);
+		long reviewCount = reviewService.getReviewCountForSeller(user);
+
+		model.addAttribute("targetUser", user); // 表示対象のユーザー
+		model.addAttribute("items", allItems);
+		model.addAttribute("averageRating", averageRating);
+		model.addAttribute("reviewCount", reviewCount);
+
+		return "user/users/detail";
+	}
 }

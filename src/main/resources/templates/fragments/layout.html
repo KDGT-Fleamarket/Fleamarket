@@ -13,6 +13,7 @@
       <div class="nav-links">
         <a th:href="@{/items}">商品一覧</a>
         <a th:href="@{/admin/users}" th:if="${#authorization.expression('hasRole(''ADMIN'')')}">ユーザー管理</a>
+		<a th:href="@{/admin/dashboard}" th:if="${#authorization.expression('hasRole(''ADMIN'')')}">ダッシュボードに戻る</a>
       </div>
 
       <!-- ログアウト：POST /logout（CSRF 必須） -->
