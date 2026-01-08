@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.example.fleamarket.entity.Terms;
@@ -16,4 +18,13 @@ public interface TermsRepository extends JpaRepository<Terms, Long> {
 
 	// 全ての規約をバージョン降順で取得（管理画面の一覧用）
 	List<Terms> findAllByOrderByTermsVersionDesc();
+
+	// キーワード(terms_content) ＋ 施行日(指定日以前) で検索
+	@Query("SELECT t FROM Terms t WHERE " +
+			"(lower(t.termsContent) LIKE lower(concat('%', :q, '%'))) " +
+			"AND (:hasDate = false OR t.effectiveDate <= :date) " +
+			"ORDER BY t.termsVersion DESC")
+	List<Terms> searchTerms(@Param("q") String q,
+			@Param("date") LocalDate date,
+			@Param("hasDate") boolean hasDate);
 }

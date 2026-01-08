@@ -16,10 +16,10 @@ import com.example.fleamarket.entity.User;
 @Repository
 public interface AppOrderRepository extends JpaRepository<AppOrder, Long> {
 	// 買い手で注文一覧を取得
-	List<AppOrder> findByBuyer(User buyer);
+	List<AppOrder> findByBuyerOrderByIdDesc(User buyer);
 
 	// 出品者で注文一覧を取得（Itemのseller経由）
-	List<AppOrder> findByItem_Seller(User seller);
+	List<AppOrder> findByItem_SellerOrderByIdDesc(User seller);
 
 	// PaymentIntent IDで1件を特定（決済完了時に使う）
 	Optional<AppOrder> findByPaymentIntentId(String paymentIntentId);

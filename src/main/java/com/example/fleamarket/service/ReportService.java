@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import com.example.fleamarket.entity.Report;
 import com.example.fleamarket.entity.User;
@@ -69,5 +70,29 @@ public class ReportService {
 
 		report.setStatus("完了");
 		reportRepository.save(report);
+	}
+
+	// 管理者用
+	public List<Report> searchReportsForAdmin(String q, String typeStr, String status, Long reporterId) {
+		String query = (StringUtils.hasText(q)) ? q : "";
+		Report.ReportType reportTypeEnum = null;
+		boolean hasType = false;
+		if (StringUtils.hasText(typeStr)) {
+			try {
+				reportTypeEnum = Report.ReportType.valueOf(typeStr);
+				hasType = true;
+			} catch (IllegalArgumentException e) {
+				// 不正な文字列は無視
+			}
+		}
+
+		boolean hasStatus = StringUtils.hasText(status);
+		boolean hasReporterId = (reporterId != null);
+
+		return reportRepository.searchReports(
+				query,
+				reportTypeEnum, hasType,
+				status, hasStatus,
+				reporterId, hasReporterId);
 	}
 }

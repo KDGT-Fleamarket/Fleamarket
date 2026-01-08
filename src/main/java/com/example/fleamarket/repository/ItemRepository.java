@@ -25,10 +25,21 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
 
 	Page<Item> findByStatus(String status, Pageable pageable);
 
-	List<Item> findBySeller(User seller);
+	List<Item> findBySellerOrderByIdDesc(User seller);
 
 	@Modifying
 	@Transactional
 	@Query("UPDATE Item i SET i.status = :newStatus WHERE i.id = :id AND i.status = '出品中'")
 	int updateStatusIfAvailable(@Param("id") Long id, @Param("newStatus") String newStatus);
+
+	// 全件取得（ID降順）
+	List<Item> findAllByOrderByIdDesc();
+
+	// キーワード(name or description) ＋ ステータス
+	@Query("SELECT i FROM Item i WHERE " +
+			"(lower(i.name) LIKE lower(concat('%', :q, '%')) OR lower(i.description) LIKE lower(concat('%', :q, '%'))) "
+			+
+			"AND (:status IS NULL OR i.status = :status) " +
+			"ORDER BY i.id DESC")
+	List<Item> searchForAdmin(@Param("q") String q, @Param("status") String status);
 }

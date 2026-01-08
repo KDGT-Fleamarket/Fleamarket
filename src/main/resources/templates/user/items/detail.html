@@ -122,8 +122,8 @@
 		</form>
 		<!-- 下部の戻るボタン -->
 		<div class="button-group">
-			<!-- 商品一覧ページへの戻りリンク -->
-			<a th:href="@{/items}" class="button secondary">商品一覧に戻る</a>
+			<!-- ページの戻りリンク -->
+			<a href="javascript:void(0);" onclick="history.back();" class="button secondary">前のページに戻る</a>
 		</div>
 	</div>
 	
@@ -159,7 +159,7 @@
 	                
 	                // 購入ボタンを非表示にする（「決済待ち」または「売却済」なら消す）
 	                var buyForm = document.querySelector('form[action*="initiate-purchase"]');
-	                if (buyForm && (status.body === "決済待ち" || status.body === "購入済")) {
+	                if (buyForm && (status.body === "決済待ち" || status.body === "売却済")) {
 	                    buyForm.style.display = 'none';
 	                }
 	            });

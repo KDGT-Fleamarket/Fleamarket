@@ -57,7 +57,7 @@ public class FavoriteService {
 	}
 
 	public List<Item> getFavoriteItemsByUser(User user) {
-		return favoriteItemRepository.findByUser(user).stream()
+		return favoriteItemRepository.findByUserOrderByIdDesc(user).stream()
 				.map(FavoriteItem::getItem)
 				.collect(Collectors.toList());
 	}
