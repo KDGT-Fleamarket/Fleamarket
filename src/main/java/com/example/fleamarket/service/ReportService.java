@@ -73,23 +73,26 @@ public class ReportService {
 	}
 
 	// 管理者用
-	public List<Report> searchReportsForAdmin(String q, String typeStr, String status) {
+	public List<Report> searchReportsForAdmin(String q, String typeStr, String status, Long reporterId) {
 		String query = (StringUtils.hasText(q)) ? q : "";
-
 		Report.ReportType reportTypeEnum = null;
 		boolean hasType = false;
-
 		if (StringUtils.hasText(typeStr)) {
 			try {
 				reportTypeEnum = Report.ReportType.valueOf(typeStr);
 				hasType = true;
 			} catch (IllegalArgumentException e) {
-				// 文字列がEnumに存在しない場合は何もしない（hasType=false）
+				// 不正な文字列は無視
 			}
 		}
 
 		boolean hasStatus = StringUtils.hasText(status);
+		boolean hasReporterId = (reporterId != null);
 
-		return reportRepository.searchReports(query, reportTypeEnum, hasType, status, hasStatus);
+		return reportRepository.searchReports(
+				query,
+				reportTypeEnum, hasType,
+				status, hasStatus,
+				reporterId, hasReporterId);
 	}
 }

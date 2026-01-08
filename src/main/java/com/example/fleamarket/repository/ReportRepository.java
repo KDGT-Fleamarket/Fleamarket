@@ -31,10 +31,13 @@ public interface ReportRepository extends JpaRepository<Report, Long> {
 			"(lower(r.message) LIKE lower(concat('%', :q, '%'))) " +
 			"AND (:hasType = false OR r.reportType = :type) " +
 			"AND (:hasStatus = false OR r.status = :status) " +
+			"AND (:hasReporterId = false OR r.reporter.id = :reporterId) " +
 			"ORDER BY r.id DESC")
 	List<Report> searchReports(@Param("q") String q,
 			@Param("type") Report.ReportType type,
 			@Param("hasType") boolean hasType,
 			@Param("status") String status,
-			@Param("hasStatus") boolean hasStatus);
+			@Param("hasStatus") boolean hasStatus,
+			@Param("reporterId") Long reporterId,
+			@Param("hasReporterId") boolean hasReporterId);
 }

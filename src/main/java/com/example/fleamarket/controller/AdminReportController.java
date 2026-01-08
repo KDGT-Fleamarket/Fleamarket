@@ -26,14 +26,16 @@ public class AdminReportController {
 	public String list(@RequestParam(required = false) String q,
 			@RequestParam(required = false) String type,
 			@RequestParam(required = false) String status,
+			@RequestParam(required = false) Long reporterId,
 			Model model) {
 
-		List<Report> reports = reportService.searchReportsForAdmin(q, type, status);
+		List<Report> reports = reportService.searchReportsForAdmin(q, type, status, reporterId);
 
 		model.addAttribute("reports", reports);
 		model.addAttribute("q", q);
 		model.addAttribute("type", type);
 		model.addAttribute("status", status);
+		model.addAttribute("reporterId", reporterId);
 
 		return "admin/reports/list";
 	}

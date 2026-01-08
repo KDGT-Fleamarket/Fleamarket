@@ -20,9 +20,10 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 
 	List<Review> findByReviewerOrderByIdDesc(User reviewer);
 
-	// 管理者向け：最新のレビューから順に全て取得
+	// 管理者：最新のレビューから順に全て取得
 	List<Review> findAllByOrderByCreatedAtDesc();
 
+	// キーワード、評価、販売者、購入者で検索
 	@Query("SELECT r FROM Review r WHERE " +
 			"(lower(r.comment) LIKE lower(concat('%', :q, '%'))) " +
 			"AND (:rating IS NULL OR r.rating = :rating) " +

@@ -16,6 +16,8 @@
 		<div class="search-area">
 		    <form th:action="@{/admin/reports}" method="get" class="filter-form">
 		        <input type="text" name="q" th:value="${q}" placeholder="メッセージ内容で検索...">
+				
+				<input type="number" name="reporterId" th:value="${reporterId}" placeholder="報告者ID">
 		        
 		        <select name="type">
 		            <option value="">すべてのタイプ</option>
