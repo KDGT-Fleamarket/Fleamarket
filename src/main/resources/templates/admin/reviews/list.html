@@ -8,6 +8,26 @@
 <body>
     <div class="container">
         <h1>レビュー一覧</h1>
+		
+		<div class="search-area">
+		    <form th:action="@{/admin/reviews}" method="get" class="filter-form">
+		        <input type="text" name="q" th:value="${q}" placeholder="コメント内容で検索...">
+		        
+		        <select name="rating">
+		            <option value="">すべての評価</option>
+		            <option th:each="i : ${#numbers.sequence(5, 1)}" 
+		                    th:value="${i}" th:text="${i + ' ★'}" 
+		                    th:selected="${rating == i}"></option>
+		        </select>
+
+		        <input type="number" name="sellerId" th:value="${sellerId}" placeholder="出品者ID">
+		        <input type="number" name="reviewerId" th:value="${reviewerId}" placeholder="購入者ID">
+		        
+		        <button type="submit" class="button">検索</button>
+		        <a th:href="@{/admin/reviews}" class="button secondary">リセット</a>
+		    </form>
+		</div>
+		
         <table>
             <thead>
                 <tr>

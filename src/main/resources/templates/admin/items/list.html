@@ -18,6 +18,22 @@
 		<!-- 説明文 -->
 		<p>システム内の全ての商品を管理します。</p>
 		
+		<div class="search-area">
+		    <form th:action="@{/admin/items}" method="get" class="filter-form">
+		        <input type="text" name="q" th:value="${q}" placeholder="商品名で検索...">
+		        
+		        <select name="status">
+		            <option value="">すべてのステータス</option>
+		            <option value="出品中" th:selected="${status == '出品中'}">出品中</option>
+		            <option value="決済待ち" th:selected="${status == '決済待ち'}">決済待ち</option>
+		            <option value="売却済" th:selected="${status == '売却済'}">売却済</option>
+		        </select>
+		        
+		        <button type="submit" class="button">検索</button>
+		        <a th:href="@{/admin/items}" class="button secondary">リセット</a>
+		    </form>
+		</div>
+		
 		<!-- 商品一覧 -->
 		<table>
 			<!-- 見出し -->

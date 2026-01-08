@@ -1,5 +1,7 @@
 package com.example.fleamarket.controller;
 
+import java.util.List;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -8,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.example.fleamarket.entity.Report;
 import com.example.fleamarket.service.ReportService;
 
 @Controller
@@ -19,9 +22,19 @@ public class AdminReportController {
 		this.reportService = reportService;
 	}
 
-	@GetMapping("/list")
-	public String list(Model model) {
-		model.addAttribute("reports", reportService.getAllReportsForAdmin());
+	@GetMapping
+	public String list(@RequestParam(required = false) String q,
+			@RequestParam(required = false) String type,
+			@RequestParam(required = false) String status,
+			Model model) {
+
+		List<Report> reports = reportService.searchReportsForAdmin(q, type, status);
+
+		model.addAttribute("reports", reports);
+		model.addAttribute("q", q);
+		model.addAttribute("type", type);
+		model.addAttribute("status", status);
+
 		return "admin/reports/list";
 	}
 

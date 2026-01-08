@@ -10,6 +10,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.fleamarket.entity.Item;
@@ -94,5 +95,11 @@ public class ItemService {
 			// 更新できなかった＝既に誰かがステータスを変えてしまった
 			throw new IllegalStateException("この商品は既に他のお客様が購入手続き中、または売却済みです。");
 		}
+	}
+
+	public List<Item> searchItemsForAdmin(String q, String status) {
+		String query = (StringUtils.hasText(q)) ? q : "";
+		String searchStatus = (StringUtils.hasText(status)) ? status : null;
+		return itemRepository.searchForAdmin(query, searchStatus);
 	}
 }

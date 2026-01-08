@@ -6,6 +6,7 @@ import java.util.OptionalDouble;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import com.example.fleamarket.entity.AppOrder;
 import com.example.fleamarket.entity.Review;
@@ -77,5 +78,11 @@ public class ReviewService {
 	public Review findReviewById(Long id) {
 		return reviewRepository.findById(id)
 				.orElseThrow(() -> new IllegalArgumentException("レビューが見つかりません ID:" + id));
+	}
+
+	public List<Review> searchReviewsForAdmin(String q, Integer rating, Long sellerId, Long reviewerId) {
+		String query = (StringUtils.hasText(q)) ? q : "";
+		// rating, sellerId, reviewerId は Controller から null で渡ってくればそのまま Repository へ
+		return reviewRepository.searchReviews(query, rating, sellerId, reviewerId);
 	}
 }

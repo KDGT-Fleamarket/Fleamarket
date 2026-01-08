@@ -15,8 +15,6 @@ DROP TABLE IF EXISTS users CASCADE;
 DROP TABLE IF EXISTS terms CASCADE;
 DROP TYPE IF EXISTS report_tyoe CASCADE;
 
-CREATE TYPE report_type AS ENUM('違反報告','お問い合わせ');
-
 -- =================================================
 -- 2. テーブル作成 (DDL)
 -- =================================================
@@ -124,7 +122,7 @@ CREATE TABLE terms(
 CREATE TABLE report(
 	id SERIAL PRIMARY KEY,
 	reporter_id INT NOT NULL,
-	report_type report_type NOT NULL,
+	report_type VARCHAR(20) NOT NULL,
 	message TEXT NOT NULL,
 	status VARCHAR(20) NOT NULL DEFAULT '未処理',
 	created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,

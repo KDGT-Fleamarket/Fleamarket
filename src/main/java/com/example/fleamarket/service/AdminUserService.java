@@ -7,6 +7,7 @@ import java.util.NoSuchElementException;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import com.example.fleamarket.entity.User;
 import com.example.fleamarket.entity.UserComplaint;
@@ -67,5 +68,14 @@ public class AdminUserService {
 		u.setBannedByAdminId(null);
 		u.setEnabled(true); // 任意
 		userRepository.save(u);
+	}
+
+	@Transactional(readOnly = true)
+	public List<User> searchUsersForAdmin(String q, String role, Boolean banned) {
+		if (!StringUtils.hasText(q) && !StringUtils.hasText(role) && banned == null) {
+			return userRepository.findAllByOrderByIdDesc();
+		}
+		String query = (q != null) ? q : "";
+		return userRepository.searchUsers(query, role, banned);
 	}
 }

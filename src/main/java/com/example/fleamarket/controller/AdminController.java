@@ -3,6 +3,7 @@ package com.example.fleamarket.controller;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.LocalDate;
+import java.util.List;
 
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.example.fleamarket.entity.Item;
 import com.example.fleamarket.service.AppOrderService;
 import com.example.fleamarket.service.ItemService;
 
@@ -33,8 +35,16 @@ public class AdminController {
 	}
 
 	@GetMapping("/items")
-	public String manageItems(Model model) {
-		model.addAttribute("items", itemService.getAllItems());
+	public String manageItems(@RequestParam(required = false) String q,
+			@RequestParam(required = false) String status,
+			Model model) {
+
+		List<Item> items = itemService.searchItemsForAdmin(q, status);
+
+		model.addAttribute("items", items);
+		model.addAttribute("q", q); // 検索窓の値を保持
+		model.addAttribute("status", status); // セレクトボックスの値を保持
+
 		return "admin/items/list";
 	}
 

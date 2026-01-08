@@ -13,6 +13,19 @@
             <a th:href="@{/admin/terms/create}" class="button">＋ 新しい規約を作成</a>
             <a th:href="@{/admin/dashboard}" class="button secondary">ダッシュボードに戻る</a>
         </div>
+		
+		<div class="search-area">
+		    <form th:action="@{/admin/terms}" method="get" class="filter-form">
+		        <input type="text" name="q" th:value="${q}" placeholder="規約内容で検索...">
+		        
+		        <label for="date">施行日:</label>
+		        <input type="date" id="date" name="date" th:value="${date}">
+		        <span>以前の規約を表示</span>
+		        
+		        <button type="submit" class="button">検索</button>
+		        <a th:href="@{/admin/terms}" class="button secondary">リセット</a>
+		    </form>
+		</div>
 
         <table border="1" style="width: 100%; border-collapse: collapse;">
             <thead>
@@ -25,7 +38,7 @@
                 </tr>
             </thead>
             <tbody>
-                <tr th:each="t : ${termsList}">
+                <tr th:each="t : ${terms}">
                     <td th:text="${t.termsVersion}"></td>
                     <td th:text="${t.effectiveDate}"></td>
                     <td th:text="${#strings.abbreviate(t.termsContent, 50)}"></td>
@@ -39,6 +52,9 @@
                         <a th:href="@{/admin/terms/detail/{id}(id=${t.termsVersion})}" class="button small">詳細</a>
                     </td>
                 </tr>
+				<tr th:if="${#lists.isEmpty(terms)}">
+					<td colspan="5">規約がありません。</td>
+				</tr>
             </tbody>
         </table>
     </div>
