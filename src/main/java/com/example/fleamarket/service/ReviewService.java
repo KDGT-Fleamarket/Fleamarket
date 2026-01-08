@@ -69,4 +69,13 @@ public class ReviewService {
 	public Review getReviewByOrderId(Long orderId) {
 		return reviewRepository.findByOrderId(orderId).orElse(null);
 	}
+
+	public List<Review> findAllReviews() {
+		return reviewRepository.findAllByOrderByCreatedAtDesc();
+	}
+
+	public Review findReviewById(Long id) {
+		return reviewRepository.findById(id)
+				.orElseThrow(() -> new IllegalArgumentException("レビューが見つかりません ID:" + id));
+	}
 }

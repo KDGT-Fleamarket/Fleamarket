@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>レビュー管理 - 管理画面</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <div class="container">
+        <h1>レビュー一覧</h1>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>評価</th>
+                    <th>投稿者</th>
+                    <th>対象出品者</th>
+                    <th>商品名</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="review : ${reviews}">
+                    <td th:text="${review.id}"></td>
+                    <td>
+                        <span th:each="i : ${#numbers.sequence(1, 5)}" 
+                              th:text="${i <= review.rating ? '★' : '☆'}" style="color: #f1c40f;"></span>
+                    </td>
+                    <td th:text="${review.reviewer.name}"></td>
+                    <td th:text="${review.seller.name}"></td>
+                    <td th:text="${review.order.item.name}"></td>
+                    <td>
+                        <a th:href="@{/admin/reviews/{id}(id=${review.id})}" class="button small">詳細</a>
+                    </td>
+                </tr>
+				<tr th:if="${#lists.isEmpty(reviews)}">
+					<td colspan="6">レビューはありません。</td>
+				</tr>
+            </tbody>
+        </table>
+        <div class="button-group">
+            <a th:href="@{/admin/dashboard}" class="button secondary">ダッシュボードへ戻る</a>
+        </div>
+    </div>
+</body>
+</html>
