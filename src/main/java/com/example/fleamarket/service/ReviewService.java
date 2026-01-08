@@ -49,21 +49,21 @@ public class ReviewService {
 	}
 
 	public List<Review> getReviewsBySeller(User seller) {
-		return reviewRepository.findBySeller(seller);
+		return reviewRepository.findBySellerOrderByIdDesc(seller);
 	}
 
 	public long getReviewCountForSeller(User seller) {
-		return reviewRepository.findBySeller(seller).size();
+		return reviewRepository.findBySellerOrderByIdDesc(seller).size();
 	}
 
 	public OptionalDouble getAverageRatingForSeller(User seller) {
-		return reviewRepository.findBySeller(seller).stream()
+		return reviewRepository.findBySellerOrderByIdDesc(seller).stream()
 				.mapToInt(Review::getRating)
 				.average();
 	}
 
 	public List<Review> getReviewsByReviewer(User reviewer) {
-		return reviewRepository.findByReviewer(reviewer);
+		return reviewRepository.findByReviewerOrderByIdDesc(reviewer);
 	}
 
 	public Review getReviewByOrderId(Long orderId) {

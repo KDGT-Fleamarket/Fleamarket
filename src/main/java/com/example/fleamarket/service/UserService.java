@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,7 +24,7 @@ public class UserService {
 	}
 
 	public List<User> getAllUsers() {
-		return repo.findAll();
+		return repo.findAll(Sort.by(Sort.Direction.DESC, "id"));
 	}
 
 	public Optional<User> getUserById(Long id) {

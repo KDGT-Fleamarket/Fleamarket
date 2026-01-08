@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Sort;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -110,15 +111,15 @@ public class AppOrderService {
 	}
 
 	public List<AppOrder> getAllOrders() {
-		return appOrderRepository.findAll();
+		return appOrderRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
 	}
 
 	public List<AppOrder> getOrdersByBuyer(User buyer) {
-		return appOrderRepository.findByBuyer(buyer);
+		return appOrderRepository.findByBuyerOrderByIdDesc(buyer);
 	}
 
 	public List<AppOrder> getOrdersBySeller(User seller) {
-		return appOrderRepository.findByItem_Seller(seller);
+		return appOrderRepository.findByItem_SellerOrderByIdDesc(seller);
 	}
 
 	@Transactional
@@ -188,14 +189,14 @@ public class AppOrderService {
 
 	// 出品者向け：発送作業が必要な注文
 	public List<AppOrder> getActionRequiredSales(User seller) {
-		return appOrderRepository.findByItem_Seller(seller).stream()
+		return appOrderRepository.findByItem_SellerOrderByIdDesc(seller).stream()
 				.filter(o -> "購入済".equals(o.getStatus())) // ステータスが「購入済」＝発送待ち
 				.toList();
 	}
 
 	// 購入者向け：受取評価が必要な注文
 	public List<AppOrder> getActionRequiredOrders(User buyer) {
-		return appOrderRepository.findByBuyer(buyer).stream()
+		return appOrderRepository.findByBuyerOrderByIdDesc(buyer).stream()
 				.filter(o -> "発送済".equals(o.getStatus())) // ステータスが「発送済」＝受取・評価待ち
 				.toList();
 	}

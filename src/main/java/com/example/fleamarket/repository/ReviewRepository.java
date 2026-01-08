@@ -12,11 +12,11 @@ import com.example.fleamarket.entity.User;
 
 @Repository
 public interface ReviewRepository extends JpaRepository<Review, Long> {
-	List<Review> findBySeller(User seller);
+	List<Review> findBySellerOrderByIdDesc(User seller);
 
 	Optional<Review> findByOrderId(Long orderId);
 
-	List<Review> findByReviewer(User reviewer);
+	List<Review> findByReviewerOrderByIdDesc(User reviewer);
 
 	// 管理者向け：最新のレビューから順に全て取得
 	List<Review> findAllByOrderByCreatedAtDesc();

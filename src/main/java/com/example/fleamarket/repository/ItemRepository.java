@@ -25,7 +25,7 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
 
 	Page<Item> findByStatus(String status, Pageable pageable);
 
-	List<Item> findBySeller(User seller);
+	List<Item> findBySellerOrderByIdDesc(User seller);
 
 	@Modifying
 	@Transactional

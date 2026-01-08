@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,7 +25,7 @@ public class AdminUserService {
 	}
 
 	public List<User> listAllUsers() {
-		return userRepository.findAll();
+		return userRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
 	}
 
 	public User findUser(Long id) {

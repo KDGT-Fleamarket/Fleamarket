@@ -14,7 +14,7 @@ import com.example.fleamarket.entity.User;
 public interface FavoriteItemRepository extends JpaRepository<FavoriteItem, Long> {
 	Optional<FavoriteItem> findByUserAndItem(User user, Item item);
 
-	List<FavoriteItem> findByUser(User user);
+	List<FavoriteItem> findByUserOrderByIdDesc(User user);
 
 	boolean existsByUserAndItem(User user, Item item);
 }

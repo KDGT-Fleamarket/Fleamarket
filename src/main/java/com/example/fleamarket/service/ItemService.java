@@ -47,7 +47,7 @@ public class ItemService {
 	}
 
 	public List<Item> getAllItems() {
-		return itemRepository.findAll();
+		return itemRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
 	}
 
 	public Optional<Item> getItemById(Long id) {
@@ -76,7 +76,7 @@ public class ItemService {
 	}
 
 	public List<Item> getItemsBySeller(User seller) {
-		return itemRepository.findBySeller(seller);
+		return itemRepository.findBySellerOrderByIdDesc(seller);
 	}
 
 	public void markItemAsSold(Long itemId) {
