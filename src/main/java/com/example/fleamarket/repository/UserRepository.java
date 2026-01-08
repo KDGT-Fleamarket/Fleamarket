@@ -19,7 +19,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
 	Optional<User> findByName(String name);
 
-	// キャストは CAST(... AS double precision) にして、:userId との衝突を回避
 	@Query(value = """
 			SELECT CAST(COALESCE(AVG(r.rating), 0) AS double precision)
 			  FROM review r
