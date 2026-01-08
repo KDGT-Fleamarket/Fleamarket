@@ -1,23 +1,21 @@
 //資料P43
 package com.example.fleamarket.controller;
 
-import java.time.LocalDateTime;
-
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import com.example.fleamarket.entity.User;
-import com.example.fleamarket.repository.UserRepository;
+import com.example.fleamarket.service.UserService;
 
 @Controller
 public class AuthController {
 
-	private final UserRepository userRepository;
+	private final UserService userService;
 
-	public AuthController(UserRepository userRepository) {
-		this.userRepository = userRepository;
+	public AuthController(UserService userService) {
+		this.userService = userService;
 	}
 
 	@GetMapping("/login")
@@ -33,13 +31,7 @@ public class AuthController {
 
 	@PostMapping("/register")
 	public String registerUser(User user) {
-		// デフォルト値の設定
-		user.setRole("USER");
-		user.setEnabled(true);
-		user.setBanned(false);
-		user.setLastLoginAt(LocalDateTime.now()); // 作成日時としてセット
-
-		userRepository.save(user);
+		userService.registerNewUser(user);
 		return "redirect:/login?registered";
 	}
 }

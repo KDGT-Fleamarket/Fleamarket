@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.example.fleamarket.entity.User;
 import com.example.fleamarket.repository.UserRepository;
 import com.example.fleamarket.service.AdminUserService;
+import com.example.fleamarket.service.UserService;
 
 @Controller
 @RequestMapping("/admin/users")
@@ -26,10 +27,12 @@ public class AdminUserController {
 
 	private final AdminUserService service;
 	private final UserRepository users;
+	private final UserService userService;
 
-	public AdminUserController(AdminUserService service, UserRepository users) {
+	public AdminUserController(AdminUserService service, UserRepository users, UserService userService) {
 		this.service = service;
 		this.users = users;
+		this.userService = userService;
 	}
 
 	@GetMapping
@@ -95,13 +98,7 @@ public class AdminUserController {
 
 	@PostMapping("/create")
 	public String createAdminUser(User user) {
-		user.setRole("ADMIN");
-		user.setEnabled(true);
-		user.setBanned(false);
-		user.setLastLoginAt(LocalDateTime.now());
-		user.setTermsAgreedAt(LocalDateTime.now()); // 管理者作成なので即時同意扱い
-
-		users.save(user);
-		return "redirect:/admin/users/list?created";
+		userService.createAdminUser(user);
+		return "redirect:/admin/users?created";
 	}
 }

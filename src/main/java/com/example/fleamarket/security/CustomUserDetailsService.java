@@ -23,17 +23,10 @@ public class CustomUserDetailsService implements UserDetailsService {
 
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		// ★★★ ここにログを追加
-		System.out.println("★★★ CustomUserDetailsServiceが呼ばれました: " + username);
-
 		User u = users.findByEmailIgnoreCase(username)
 				.orElseThrow(() -> {
-					System.out.println("★★★ ユーザーが見つかりません: " + username);
 					return new UsernameNotFoundException("User not found: " + username);
 				});
-
-		System.out.println("★★★ DBから取得したパスワード: [" + u.getPassword() + "]");
-		System.out.println("★★★ DBから取得したロール: [" + u.getRole() + "]");
 
 		if (!u.isEnabled())
 			throw new DisabledException("Account disabled");
