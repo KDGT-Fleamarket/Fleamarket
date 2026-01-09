@@ -27,31 +27,31 @@
 		
 		<div class="notification-area">
 					
-					<div th:each="report : ${noticeReports}" class="alert alert-info">
-						<p>
-							<strong>【報告/お問い合わせ】</strong> 
-							「<span th:text="${report.title}"></span>」への対応が完了しました。
-							<a th:href="@{/reports/detail/{id}(id=${report.id})}" class="button small">内容を確認</a>
-						</p>
-					</div>
+			<div th:each="report : ${noticeReports}" class="alert alert-info">
+				<p>
+					<strong>【報告/お問い合わせ】</strong> 
+					「<span th:text="${#strings.abbreviate(report.message, 20)}"></span>」への対応が完了しました。
+					<a th:href="@{/reports/detail/{id}(id=${report.id})}" class="button small">内容を確認</a>
+				</p>
+			</div>
 
-					<div th:each="sale : ${noticeSales}" class="alert alert-success">
-						<p>
-							<strong>【売上】</strong> 
-							「<span th:text="${sale.item.name}"></span>」が購入されました！発送準備をしてください。
-							<a th:href="@{/my-page/sales}" class="button small">発送手続きへ</a>
-						</p>
-					</div>
+			<div th:each="sale : ${noticeSales}" class="alert alert-success">
+				<p>
+					<strong>【売上】</strong> 
+					「<span th:text="${sale.item.name}"></span>」が購入されました！発送作業をしてください。
+					<a th:href="@{/my-page/sales}" class="button small">発送手続きへ</a>
+				</p>
+			</div>
 
-					<div th:each="order : ${noticeOrders}" class="alert alert-warning">
-						<p>
-							<strong>【購入】</strong> 
-							「<span th:text="${order.item.name}"></span>」が発送されました！中身を確認して評価してください。
-							<a th:href="@{/my-page/orders}" class="button small">受取・評価する</a>
-						</p>
-					</div>
-					
-				</div>
+			<div th:each="order : ${noticeOrders}" class="alert alert-warning">
+				<p>
+					<strong>【購入】</strong> 
+					「<span th:text="${order.item.name}"></span>」が発送されました！中身を確認して評価してください。
+					<a th:href="@{/my-page/orders}" class="button small">受取・評価する</a>
+				</p>
+			</div>
+			
+		</div>
 
 <!-- ナビゲーション -->
 		<div class="main-nav">

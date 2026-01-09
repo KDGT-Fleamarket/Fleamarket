@@ -17,7 +17,8 @@
                 <tr><th>販売価格</th><td th:text="${order.price} + '円'"></td></tr>
                 <tr><th>ステータス</th><td th:text="${order.status}"></td></tr>
                 <tr><th>販売日時</th><td th:text="${#temporals.format(order.createdAt, 'yyyy/MM/dd HH:mm')}"></td></tr>
-                <tr><th>購入者</th><td th:text="${order.buyer.name} + ' 様'"></td></tr>
+                <tr><th>購入者名</th><td th:text="${order.buyer.name} + ' 様'"></td></tr>
+				<tr><th>宛先住所</th><td th:text="${order.buyer.address}"></td></tr>
             </table>
         </section>
 

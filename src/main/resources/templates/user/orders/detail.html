@@ -1,29 +1,61 @@
 <!DOCTYPE html>
-<htmlxmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
 	<meta charset="UTF-8">
 	<title>購入詳細</title>
 	<link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
+	<div class="container">
+		<h1>購入詳細</h1>
 
-	<section class="info-card">
-	    <h3>注文情報</h3>
-	    <p>商品名：<span th:text="${order.item.name}"></span></p>
-		<!-- 画像/価格/出品者なども必要なら書く -->
-	    <p>ステータス：<span th:text="${order.status}"></span></p>
-	    
-	    <div th:if="${review == null && order.status == '発送済'}" style="margin-top: 20px;">
-	        <p>商品の受け取りはお済みですか？出品者を評価しましょう。</p>
-	        <a th:href="@{/reviews/create(orderId=${order.id})}" class="button">評価を投稿する</a>
-	    </div>
+		<section class="info-card">
+		    <h3>注文・商品情報</h3>
+		    <table class="detail-table">
+		        <tr><th>注文ID</th><td th:text="${order.id}"></td></tr>
+		        <tr><th>商品名</th><td th:text="${order.item.name}"></td></tr>
+		        <tr><th>購入価格</th><td th:text="${order.price} + ' 円'"></td></tr>
+		        <tr><th>ステータス</th><td th:text="${order.status}"></td></tr>
+		        <tr><th>購入日時</th><td th:text="${#temporals.format(order.createdAt, 'yyyy/MM/dd HH:mm')}"></td></tr>
+		        <tr><th>出品者</th><td th:text="${order.item.seller.name} + ' 様'"></td></tr>
+		        <tr><th>お届け先住所</th><td th:text="${order.buyer.address}"></td></tr>
+		    </table>
+		</section>
 
-	    <div th:if="${review != null}" class="review-display">
-	        <h3>投稿済みの評価</h3>
-	        <p>評価：<span th:text="${review.rating}"></span> / 5</p>
-	        <p th:text="${review.comment}"></p>
-	    </div>
-	</section>
-	
+		<section th:if="${order.item.imageUrl}" class="info-card" style="margin-top: 20px; text-align: center;">
+			<img th:src="${order.item.imageUrl}" alt="商品画像" style="max-width: 300px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+		</section>
+
+		<section class="info-card" style="margin-top: 20px;">
+		    <h3>商品・出品者への評価</h3>
+		    
+		    <div th:if="${review == null && order.status == '発送済'}" class="action-box" style="text-align: center; padding: 20px; background: #fff9db; border-radius: 8px; border: 1px solid #fab005;">
+		        <p>商品を受け取りましたか？<br>中身を確認したら、出品者の評価をして取引を完了させましょう。</p>
+		        <a th:href="@{/reviews/new/{id}(id=${order.id})}" class="button" style="margin-top: 10px;">評価を投稿する</a>
+		    </div>
+
+		    <div th:if="${review != null}" class="review-display">
+		        <div class="rating">
+		            <span th:each="i : ${#numbers.sequence(1, 5)}" 
+		                  th:text="${i <= review.rating ? '★' : '☆'}" 
+		                  style="color: #f1c40f; font-size: 1.2em;"></span>
+		            <span th:text="' (' + ${review.rating} + ')' "></span>
+		        </div>
+		        <div class="review-comment" style="margin-top: 10px; background: #f9f9f9; padding: 15px; border-radius: 5px; border-left: 4px solid #f1c40f;">
+		            <p style="white-space: pre-wrap;" th:text="${review.comment}"></p>
+		            <small th:text="${#temporals.format(review.createdAt, 'yyyy/MM/dd HH:mm')} + ' に投稿'"></small>
+		        </div>
+		    </div>
+
+		    <div th:if="${review == null && order.status != '発送済'}" class="no-review">
+		        <p th:if="${order.status == '支払い済'}" style="color: #666;">現在、出品者が発送準備をしています。発送されるまでお待ちください。</p>
+		        <p th:if="${order.status == '完了'}" style="color: #666;">この取引は完了しています。</p>
+		    </div>
+		</section>
+
+		<div class="button-group" style="margin-top: 20px;">
+			<a th:href="@{/my-page/orders}" class="button secondary">購入履歴一覧に戻る</a>
+		</div>
+	</div>
 </body>
 </html>
