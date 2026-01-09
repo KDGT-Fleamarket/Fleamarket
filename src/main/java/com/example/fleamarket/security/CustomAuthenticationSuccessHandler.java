@@ -14,14 +14,18 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.fleamarket.entity.LoginLog;
+import com.example.fleamarket.repository.LoginLogRepository;
 import com.example.fleamarket.repository.UserRepository;
 
 @Component
 public class CustomAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
+	private final LoginLogRepository loginLogRepository;
 	private final UserRepository userRepository;
 
-	public CustomAuthenticationSuccessHandler(UserRepository userRepository) {
+	public CustomAuthenticationSuccessHandler(LoginLogRepository loginLogRepository, UserRepository userRepository) {
+		this.loginLogRepository = loginLogRepository;
 		this.userRepository = userRepository;
 	}
 
@@ -34,6 +38,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
 		String email = authentication.getName();
 		userRepository.findByEmail(email).ifPresent(user -> {
 			user.setLastLoginAt(LocalDateTime.now());
+			loginLogRepository.save(new LoginLog(user));
 			userRepository.save(user);
 		});
 

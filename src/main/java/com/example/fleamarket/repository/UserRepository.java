@@ -1,6 +1,7 @@
 // src/main/java/com/example/fleamarketsystem/repository/UserRepository.java
 package com.example.fleamarket.repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,7 +29,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 			""", nativeQuery = true)
 	Double averageRatingForUser(@Param("userId") Long userId);
 
-	// キーワード(name or email) かつ ロール かつ BAN状態 で検索
+	// 検索用 キーワード(name or email) + ロール + BAN状態 で検索
 	@Query("SELECT u FROM User u WHERE " +
 			"(lower(u.name) LIKE lower(concat('%', :q, '%')) OR lower(u.email) LIKE lower(concat('%', :q, '%'))) " +
 			"AND (:role IS NULL OR u.role = :role) " +
@@ -36,6 +37,11 @@ public interface UserRepository extends JpaRepository<User, Long> {
 			"ORDER BY u.id DESC")
 	List<User> searchUsers(@Param("q") String q, @Param("role") String role, @Param("banned") Boolean banned);
 
-	// 全件
 	List<User> findAllByOrderByIdDesc();
+
+	// 集計用
+	@Query("SELECT CAST(u.createdAt AS date) as day, COUNT(u.id) " +
+			"FROM User u WHERE u.createdAt BETWEEN :start AND :end " +
+			"GROUP BY CAST(u.createdAt AS date) ORDER BY day ASC")
+	List<Object[]> countDailyRegistrations(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 }

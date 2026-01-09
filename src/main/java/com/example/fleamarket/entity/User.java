@@ -62,4 +62,7 @@ public class User {
 
 	@Column(name = "terms_agreed_at")
 	private LocalDateTime termsAgreedAt;
+
+	@Column(name = "created_at", nullable = false, updatable = false)
+	private LocalDateTime createdAt = LocalDateTime.now();
 }

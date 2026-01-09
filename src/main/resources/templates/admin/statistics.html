@@ -17,6 +17,20 @@
 		
 		<h1>管理者: 統計データ</h1>
 		<p>フリマアプリの売上や注文に関する統計データです。</p>
+		
+<!-- 戻るボタン -->
+		<div class="button-group">
+			<a th:href="@{/admin/dashboard}" class="button secondary">
+				管理者ダッシュボードに戻る
+			</a>
+		</div>
+		
+		<div class="shortcut-buttons" style="margin-top: 20px; margin-bottom: 10px;">
+		    <span style="font-weight: bold; margin-right: 10px;">クイック選択:</span>
+		    <button type="button" class="button secondary" style="padding: 5px 15px; font-size: 0.9em;" onclick="setPeriod(7)">直近1週間</button>
+		    <button type="button" class="button secondary" style="padding: 5px 15px; font-size: 0.9em;" onclick="setPeriod(30)">直近30日</button>
+		    <button type="button" class="button secondary" style="padding: 5px 15px; font-size: 0.9em;" onclick="setPeriod(90)">直近3ヶ月</button>
+		</div>
 
 <!-- フィルタ -->
 		<form th:action="@{/admin/statistics}" method="get" class="filter-form">
@@ -35,7 +49,7 @@
 			</div>
 			
 			<!-- 確定ボタン -->
-			<button type="submit" class="button">フィルタ</button>
+			<button type="submit" class="button">フィルタを確定</button>
 		</form>
 		
 <!-- CSV エクスポートリンク -->
@@ -72,14 +86,285 @@
 				</tr>
 			</tbody>
 		</table>
-
-		<!-- 戻るボタン -->
-		<div class="button-group">
-			<a th:href="@{/admin/dashboard}" class="button secondary">
-				管理者ダッシュボードに戻る
-			</a>
+		
+		<div class="chart-container" style="width: 85%; margin: 50px auto 100px; background-color: white; padding: 20px; border-radius: 8px;">
+		    <h2>売上・取引件数の推移</h2>
+		    <canvas id="revenueChart" style="max-height: 450px;"></canvas>
 		</div>
+		
+		<div class="chart-container" style="width: 85%; margin: 50px auto 100px; background-color: white; padding: 20px; border-radius: 8px;">
+		    <h2>新規登録者数・出品数の推移</h2>
+		    <canvas id="activityChart" style="max-height: 450px;"></canvas>
+		</div>
+		
+		<h2 style="width: 85%; margin: auto;">カテゴリ別売上比率・出品比率</h2>
+		<div style="display: flex; justify-content: space-around; width: 85%; margin: 30px auto 100px; gap: 20px;">
+			
+		    <div style="flex: 1; background-color: white; padding: 0 20px; border-radius: 8px; text-align: center;">
+		        <h3>カテゴリ別売上比率 (¥)</h3>
+		        <canvas id="categorySalesChart"></canvas>
+		    </div>
+
+		    <div style="flex: 1; background-color: white; padding: 0 20px; border-radius: 8px; text-align: center;">
+		        <h3>カテゴリ別出品比率 (個)</h3>
+		        <canvas id="categoryItemsChart"></canvas>
+		    </div>
+		    
+		</div>
+		
+		<div class="chart-container" style="width: 85%; margin: 50px auto 100px; background-color: white; padding: 20px; border-radius: 8px;">
+            <h2>アクティブユーザー数 (DAU) の推移</h2>
+            <canvas id="activeUserChart" style="max-height: 400px;"></canvas>
+        </div>
+
 	</div>
+	
+	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+	<script th:inline="javascript">
+		
+		/* 売上金額・取引件数のグラフ */
+	    const labels = /*[[${revenueLabels}]]*/ [];
+	    const salesData = /*[[${revenueSales}]]*/ [];
+	    const countsData = /*[[${revenueCounts}]]*/ [];
+
+	    const ctx = document.getElementById('revenueChart').getContext('2d');
+	    new Chart(ctx, {
+	        type: 'line',
+	        data: {
+	            labels: labels,
+	            datasets: [
+	                {
+	                    label: '売上金額 (¥)',
+	                    data: salesData,
+	                    borderColor: 'rgb(75, 192, 192)',
+	                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+	                    yAxisID: 'y',
+	                    tension: 0.1,
+	                    fill: true
+	                },
+	                {
+	                    label: '取引件数 (件)',
+	                    data: countsData,
+	                    borderColor: 'rgb(255, 99, 132)',
+	                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+	                    yAxisID: 'y1',
+	                    tension: 0.1,
+	                    borderDash: [5, 5]
+	                }
+	            ]
+	        },
+	        options: {
+	            responsive: true,
+	            maintainAspectRatio: true, // アスペクト比を維持
+	            scales: {
+					x: {
+		                ticks: {
+		                    maxTicksLimit: 20 // ラベルを最大20個に間引く
+		                }
+		            },
+	                y: {
+	                    type: 'linear',
+	                    display: true,
+	                    position: 'left',
+	                    title: { display: true, text: '売上金額 (¥)' },
+	                    min: 0,         // 負の数を表示しない
+	                    max: 50000,     // テスト用に最大5万円に固定
+	                    ticks: {
+	                        stepSize: 10000 // 1万円刻み
+	                    }
+	                },
+	                y1: {
+	                    type: 'linear',
+	                    display: true,
+	                    position: 'right',
+	                    title: { display: true, text: '取引件数 (件)' },
+	                    min: 0,         // 負の数を表示しない
+	                    max: 25,        // テスト用に最大25件に固定
+	                    ticks: {
+	                        stepSize: 5 // 5件刻み
+	                    },
+	                    grid: { drawOnChartArea: false }
+	                }
+	            }
+	        }
+	    });
+		
+		/* 新規登録者数・出品数のグラフ */
+		const actLabels = /*[[${activityLabels}]]*/ [];
+		const userData = /*[[${activityUsers}]]*/ [];
+		const itemData = /*[[${activityItems}]]*/ [];
+
+		const actCtx = document.getElementById('activityChart').getContext('2d');
+		new Chart(actCtx, {
+		    data: {
+		        labels: actLabels,
+		        datasets: [
+		            {
+		                type: 'bar', // 会員数は棒グラフ
+		                label: '新規会員数 (人)',
+		                data: userData,
+		                backgroundColor: 'rgba(54, 162, 235, 0.5)',
+		                borderColor: 'rgb(54, 162, 235)',
+		                borderWidth: 1,
+		                yAxisID: 'y'
+		            },
+		            {
+		                type: 'line', // 出品数は折れ線グラフ
+		                label: '新規出品数 (個)',
+		                data: itemData,
+		                borderColor: 'rgb(255, 159, 64)',
+		                backgroundColor: 'rgba(255, 159, 64, 0.2)',
+		                fill: false,
+		                tension: 0.3,
+		                yAxisID: 'y1'
+		            }
+		        ]
+		    },
+		    options: {
+		        responsive: true,
+		        scales: {
+					x: {
+		                ticks: {
+		                    maxTicksLimit: 20 
+		                }
+		            },
+		            y: {
+		                type: 'linear', 
+		                position: 'left',
+		                title: { display: true, text: '会員数 (人)' },
+		                min: 0, 
+		                max: 15, // テスト用
+		                ticks: { stepSize: 3 }
+		            },
+		            y1: {
+		                type: 'linear', 
+		                position: 'right',
+		                title: { display: true, text: '出品数 (個)' },
+		                min: 0, 
+		                max: 25, // テスト用
+		                ticks: { stepSize: 5 },
+		                grid: { drawOnChartArea: false } // 右側の線を消す
+		            }
+		        }
+		    }
+		});
+		
+		/* カテゴリグラフ */
+		// 共通のカラーパレット
+		const categoryColors = [
+		    '#ff6384', '#36a2eb', '#ffce56', '#4bc0c0', '#9966ff', '#ff9f40', 
+		    '#c9cbcf', '#4bc0c0', '#ff9f40', '#36a2eb'
+		];
+		
+		// 共通のツールチップ設定（%を計算して表示する関数）
+		const getPieTooltipOptions = (unit) => ({
+		    callbacks: {
+		        label: function(context) {
+		            const label = context.label || '';
+		            const value = context.parsed;
+		            const dataset = context.dataset.data;
+		            const total = dataset.reduce((acc, curr) => acc + curr, 0);
+		            const percentage = ((value / total) * 100).toFixed(1); // 小数点第1位まで
+		            return `${value.toLocaleString()}${unit} (${percentage}%)`;
+		        }
+		    }
+		});
+		
+		// 売上比率グラフ
+	    new Chart(document.getElementById('categorySalesChart'), {
+	        type: 'doughnut',
+	        data: {
+	            labels: /*[[${catSalesLabels}]]*/ [],
+	            datasets: [{
+	                data: /*[[${catSalesData}]]*/ [],
+	                backgroundColor: categoryColors
+	            }]
+	        },
+			options: { 
+		        responsive: true,
+		        plugins: { 
+		            legend: { position: 'bottom' },
+		            tooltip: getPieTooltipOptions('円') 
+		        } 
+		    }
+	    });
+
+	    // 出品比率グラフ
+	    new Chart(document.getElementById('categoryItemsChart'), {
+	        type: 'doughnut',
+	        data: {
+	            labels: /*[[${catItemsLabels}]]*/ [],
+	            datasets: [{
+	                data: /*[[${catItemsData}]]*/ [],
+	                backgroundColor: categoryColors
+	            }]
+	        },
+			options: { 
+				responsive: true,
+		        plugins: { 
+		            legend: { position: 'bottom' },
+		            tooltip: getPieTooltipOptions('個') 
+		        } 
+		    }
+	    });
+		
+		/* アクティブユーザー数グラフ */
+        new Chart(document.getElementById('activeUserChart').getContext('2d'), {
+            type: 'line', // 折れ線グラフ
+            data: {
+                labels: /*[[${activeUserLabels}]]*/ [],
+                datasets: [{
+                    label: 'ログインユーザー数 (人)',
+                    data: /*[[${activeUserData}]]*/ [],
+                    borderColor: '#9966ff', 
+                    backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                    fill: true, // 線の下を塗りつぶす
+                    tension: 0.4 // グラフの線を滑らかに
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                scales: {
+					x: {
+		                ticks: {
+		                    maxTicksLimit: 20 
+		                }
+		            },
+                    y: {
+                        beginAtZero: true,
+                        min: 0,
+                        max: 20, // テスト用
+                        ticks: { stepSize: 5 },
+                        title: { display: true, text: '人数 (人)' }
+                    }
+                }
+            }
+        });
+		
+		/* グラフの集計期間切り替え */
+		function setPeriod(days) {
+	        const end = new Date();
+	        const start = new Date();
+	        
+	        // 日数を引く
+	        start.setDate(end.getDate() - days);
+	        
+	        // 日本時間（JST）の YYYY-MM-DD 形式で取得するための調整
+	        const formatDate = (date) => {
+	            const y = date.getFullYear();
+	            const m = ('0' + (date.getMonth() + 1)).slice(-2);
+	            const d = ('0' + date.getDate()).slice(-2);
+	            return `${y}-${m}-${d}`;
+	        };
+	
+	        document.getElementById('startDate').value = formatDate(start);
+	        document.getElementById('endDate').value = formatDate(end);
+	        
+	        // フォームを自動送信
+	        document.querySelector('.filter-form').submit();
+	    }
+	</script>
 </body>
 
 </html>

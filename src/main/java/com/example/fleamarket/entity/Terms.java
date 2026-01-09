@@ -23,7 +23,7 @@ public class Terms {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "terms_version") // DDLの主キー名に合わせます
+	@Column(name = "terms_version")
 	private Long termsVersion;
 
 	@Column(name = "terms_content", nullable = false, columnDefinition = "TEXT")
