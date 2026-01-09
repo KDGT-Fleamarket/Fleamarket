@@ -27,9 +27,10 @@ CREATE TABLE users (
 	role VARCHAR(20) NOT NULL,
 	line_id VARCHAR(255),
 	enabled BOOLEAN NOT NULL DEFAULT TRUE,
-	address VARCHAR(255),
+	address VARCHAR(255) NOT NULL,
 	last_login_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	terms_agreed_at TIMESTAMP NULL,
+	created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	-- ★ BAN系（最初から持たせる）
     banned BOOLEAN NOT NULL DEFAULT FALSE,
     ban_reason TEXT,
@@ -127,6 +128,13 @@ CREATE TABLE report(
 	status VARCHAR(20) NOT NULL DEFAULT '未処理',
 	created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	FOREIGN KEY(reporter_id) REFERENCES users(id)
+);
+
+CREATE TABLE login_logs (
+    id SERIAL PRIMARY KEY,
+    user_id BIGINT NOT NULL,
+    login_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
 -- インデックス

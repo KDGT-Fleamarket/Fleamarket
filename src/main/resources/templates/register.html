@@ -10,20 +10,20 @@
 	        <h1>新規会員登録</h1>
 	        <form th:action="@{/register}" th:object="${user}" method="post">
 	            <div>
-	                <label>ユーザー名</label>
+	                <label>ユーザー名 <span style="color: red;">*必須</span></label>
 	                <input type="text" th:field="*{name}" required maxlength="50">
 	            </div>
 	            <div>
-	                <label>メールアドレス:</label>
+	                <label>メールアドレス <span style="color: red;">*必須</span></label>
 	                <input type="email" th:field="*{email}" required>
 	            </div>
 	            <div>
-	                <label>パスワード:</label>
+	                <label>パスワード <span style="color: red;">*必須</span></label>
 	                <input type="password" th:field="*{password}" required>
 	            </div>
 	            <div>
-	                <label>住所 (任意):</label>
-	                <input type="text" th:field="*{address}">
+	                <label>住所 <span style="color: red;">*必須</span></label>
+	                <input type="text" th:field="*{address}" placeholder="例：東京都渋谷区..." required>
 	            </div>
 	            <button type="submit">アカウントを作成</button>
 	        </form>

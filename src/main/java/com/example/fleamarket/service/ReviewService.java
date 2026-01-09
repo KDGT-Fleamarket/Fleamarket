@@ -46,6 +46,7 @@ public class ReviewService {
 		review.setRating(rating);
 		review.setComment(comment);
 
+		order.setStatus("完了");
 		return reviewRepository.save(review);
 	}
 

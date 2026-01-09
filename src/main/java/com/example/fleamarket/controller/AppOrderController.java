@@ -1,6 +1,10 @@
 package com.example.fleamarket.controller;
 
+import java.security.Principal;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -13,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.fleamarket.entity.User;
@@ -59,9 +64,13 @@ public class AppOrderController {
 
 	@GetMapping("/confirm-payment") // Page to confirm payment with Stripe Elements
 	public String confirmPayment(@ModelAttribute("clientSecret") String clientSecret,
-			@ModelAttribute("itemId") Long itemId, Model model) {
+			@ModelAttribute("itemId") Long itemId, Principal principal, Model model) {
 		if (clientSecret == null || itemId == null) {
 			return "redirect:/items"; // Redirect if no payment intent data
+		}
+		if (principal != null) {
+			User currentUser = userService.findByEmail(principal.getName());
+			model.addAttribute("userAddress", currentUser.getAddress());
 		}
 		model.addAttribute("clientSecret", clientSecret);
 		model.addAttribute("itemId", itemId);
@@ -110,5 +119,24 @@ public class AppOrderController {
 			redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
 		}
 		return "redirect:/my-page/sales";
+	}
+
+	@PostMapping("/api/user/update-address")
+	@ResponseBody
+	public ResponseEntity<?> updateAddress(@RequestBody Map<String, String> payload, Principal principal) {
+		if (principal == null) {
+			return ResponseEntity.status(401).body("ログインが必要です");
+		}
+
+		String newAddress = payload.get("address");
+		if (newAddress == null || newAddress.trim().isEmpty()) {
+			return ResponseEntity.badRequest().body("住所を入力してください");
+		}
+
+		User user = userService.findByEmail(principal.getName());
+		user.setAddress(newAddress);
+		userService.saveUser(user);
+
+		return ResponseEntity.ok().build();
 	}
 }

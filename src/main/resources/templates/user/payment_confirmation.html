@@ -7,6 +7,8 @@
 	<title>決済確認 - フリマアプリ</title>
 	<link rel="stylesheet" th:href="@{/css/style.css}">
 	<script src="https://js.stripe.com/v3/"></script>
+	<meta th:name="_csrf" th:content="${_csrf.token}"/>
+	<meta th:name="_csrf_header" th:content="${_csrf.headerName}"/>
 </head>
 
 
@@ -15,6 +17,23 @@
 
 		<h1>決済確認</h1>
 		<p>以下の内容で決済を完了します。</p>
+		
+		<div class="shipping-address-section" style="background: #f4f4f4; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #ddd;">
+		    <h3 style="margin-top: 0;">配送先の確認</h3>
+		    <div id="address-display">
+		        <p><strong>お届け先住所:</strong> <span id="current-address" th:text="${userAddress}">住所が読み込めません</span></p>
+		        <button type="button" class="button secondary" onclick="toggleEditAddress()" style="padding: 5px 10px; font-size: 0.85em;">住所を変更する</button>
+		    </div>
+
+		    <div id="address-edit" style="display: none;">
+		        <input type="text" id="new-address" class="form-control" th:value="${userAddress}" style="width: 100%; margin-bottom: 10px;">
+		        <div class="button-group">
+		            <button type="button" class="button" onclick="updateAddress()" style="padding: 5px 15px;">保存</button>
+		            <button type="button" class="button secondary" onclick="toggleEditAddress()" style="padding: 5px 15px;">キャンセル</button>
+		        </div>
+		        <p id="address-error" style="color: red; font-size: 0.85em; display: none;">住所を保存できませんでした。</p>
+		    </div>
+		</div>
 		
 		<!-- Stripe Elements の描画ターゲット要素 -->
 		<div id="payment-element"></div>
@@ -87,6 +106,55 @@
 						'/orders/complete-purchase?paymentIntentId=' +paymentIntentId;
 			}
 		});
+		
+		// 住所編集モードの切り替え
+        function toggleEditAddress() {
+            const display = document.getElementById('address-display');
+            const edit = document.getElementById('address-edit');
+            if (edit.style.display === 'none') {
+                display.style.display = 'none';
+                edit.style.display = 'block';
+            } else {
+                display.style.display = 'block';
+                edit.style.display = 'none';
+            }
+        }
+
+        // 住所を非同期でサーバーに保存
+        async function updateAddress() {
+            const newAddress = document.getElementById('new-address').value;
+            const errorElement = document.getElementById('address-error');
+			
+			const csrfToken = document.querySelector('meta[name="_csrf"]')?.content;
+			const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content;
+            
+            if (!newAddress.trim()) {
+                alert("住所を入力してください。");
+                return;
+            }
+
+            try {
+                const response = await fetch('/orders/api/user/update-address', {
+                    method: 'POST',
+                    headers: {
+						 'Content-Type': 'application/json',
+						 [csrfHeader]: csrfToken 
+					 },
+                    body: JSON.stringify({ address: newAddress })
+                });
+
+                if (response.ok) {
+                    document.getElementById('current-address').textContent = newAddress;
+                    toggleEditAddress();
+                    errorElement.style.display = 'none';
+                } else {
+                    errorElement.style.display = 'block';
+                }
+            } catch (err) {
+                console.error("Error updating address:", err);
+                errorElement.style.display = 'block';
+            }
+        }
 	</script>
 </body>
 

@@ -18,13 +18,6 @@
 		<h1>管理者: 統計データ</h1>
 		<p>フリマアプリの売上や注文に関する統計データです。</p>
 		
-<!-- 戻るボタン -->
-		<div class="button-group">
-			<a th:href="@{/admin/dashboard}" class="button secondary">
-				管理者ダッシュボードに戻る
-			</a>
-		</div>
-		
 		<div class="shortcut-buttons" style="margin-top: 20px; margin-bottom: 10px;">
 		    <span style="font-weight: bold; margin-right: 10px;">クイック選択:</span>
 		    <button type="button" class="button secondary" style="padding: 5px 15px; font-size: 0.9em;" onclick="setPeriod(7)">直近1週間</button>
@@ -97,25 +90,31 @@
 		    <canvas id="activityChart" style="max-height: 450px;"></canvas>
 		</div>
 		
-		<h2 style="width: 85%; margin: auto;">カテゴリ別売上比率・出品比率</h2>
-		<div style="display: flex; justify-content: space-around; width: 85%; margin: 30px auto 100px; gap: 20px;">
-			
-		    <div style="flex: 1; background-color: white; padding: 0 20px; border-radius: 8px; text-align: center;">
-		        <h3>カテゴリ別売上比率 (¥)</h3>
+		<h2 style="width: 85%; margin: auto;">カテゴリ別分析</h2>
+		<div style="display: flex; justify-content: space-around; width: 85%; margin: 20px auto; gap: 20px;">
+		    <div style="flex: 1; background-color: white; padding: 20px; border-radius: 8px; text-align: center;">
+		        <h3>売上比率 (¥)</h3>
 		        <canvas id="categorySalesChart"></canvas>
 		    </div>
-
-		    <div style="flex: 1; background-color: white; padding: 0 20px; border-radius: 8px; text-align: center;">
-		        <h3>カテゴリ別出品比率 (個)</h3>
+		    <div style="flex: 1; background-color: white; padding: 20px; border-radius: 8px; text-align: center;">
+		        <h3>出品比率 (個)</h3>
 		        <canvas id="categoryItemsChart"></canvas>
 		    </div>
-		    
+		</div>
+		<div id="common-legend" style="display: flex; justify-content: center; flex-wrap: wrap; width: 85%; margin: 0 auto 100px; gap: 15px; background: white; padding: 15px; border-radius: 8px;">
 		</div>
 		
 		<div class="chart-container" style="width: 85%; margin: 50px auto 100px; background-color: white; padding: 20px; border-radius: 8px;">
             <h2>アクティブユーザー数 (DAU) の推移</h2>
             <canvas id="activeUserChart" style="max-height: 400px;"></canvas>
         </div>
+		
+<!-- 戻るボタン -->
+		<div class="button-group">
+			<a th:href="@{/admin/dashboard}" class="button secondary">
+				管理者ダッシュボードに戻る
+			</a>
+		</div>
 
 	</div>
 	
@@ -250,11 +249,29 @@
 		});
 		
 		/* カテゴリグラフ */
-		// 共通のカラーパレット
-		const categoryColors = [
-		    '#ff6384', '#36a2eb', '#ffce56', '#4bc0c0', '#9966ff', '#ff9f40', 
-		    '#c9cbcf', '#4bc0c0', '#ff9f40', '#36a2eb'
-		];
+		// 共通のカテゴリカラーセット
+		const categoryColorMap = {
+		    'おもちゃ': '#ff6384',
+		    'ファッション': '#36a2eb',
+		    '家電': '#ffce56',
+		    '本': '#4bc0c0',
+		    'その他': '#a0a0a0',
+		};
+		function getColorsForLabels(labels) {
+		    return labels.map(label => categoryColorMap[label] || defaultColor);
+		}
+		const legendContainer = document.getElementById('common-legend');
+		Object.keys(categoryColorMap).forEach(category => {
+		    const item = document.createElement('div');
+		    item.style.display = 'flex';
+		    item.style.verticalAlign = 'middle';
+		    item.style.marginRight = '10px';
+		    item.innerHTML = `
+		        <span style="display:inline-block; width:12px; height:12px; background-color:${categoryColorMap[category]}; margin-right:5px; border-radius:2px;"></span>
+		        <span style="font-size:14px; color:#666;">${category}</span>
+		    `;
+		    legendContainer.appendChild(item);
+		});
 		
 		// 共通のツールチップ設定（%を計算して表示する関数）
 		const getPieTooltipOptions = (unit) => ({
@@ -270,43 +287,65 @@
 		    }
 		});
 		
+		// ラベルとデータを値の大きい順に並べ替える関数
+		function sortDataDescending(labels, data) {
+		    // ラベルとデータをペアのオブジェクト配列にする
+		    const combined = labels.map((label, index) => ({
+		        label: label,
+		        value: data[index]
+		    }));
+
+		    combined.sort((a, b) => b.value - a.value);
+
+		    return {
+		        labels: combined.map(item => item.label),
+		        data: combined.map(item => item.value)
+		    };
+		}
+		
 		// 売上比率グラフ
-	    new Chart(document.getElementById('categorySalesChart'), {
-	        type: 'doughnut',
-	        data: {
-	            labels: /*[[${catSalesLabels}]]*/ [],
-	            datasets: [{
-	                data: /*[[${catSalesData}]]*/ [],
-	                backgroundColor: categoryColors
-	            }]
-	        },
-			options: { 
+		const rawSalesLabels = /*[[${catSalesLabels}]]*/ [];
+		const rawSalesData = /*[[${catSalesData}]]*/ [];
+		const sortedSales = sortDataDescending(rawSalesLabels, rawSalesData);
+		new Chart(document.getElementById('categorySalesChart'), {
+		    type: 'doughnut',
+		    data: {
+		        labels: sortedSales.labels,
+		        datasets: [{
+		            data: sortedSales.data,
+		            backgroundColor: getColorsForLabels(sortedSales.labels)
+		        }]
+		    },
+		    options: { 
 		        responsive: true,
 		        plugins: { 
-		            legend: { position: 'bottom' },
+		            legend: { display: false },
 		            tooltip: getPieTooltipOptions('円') 
 		        } 
 		    }
-	    });
+		});
 
 	    // 出品比率グラフ
-	    new Chart(document.getElementById('categoryItemsChart'), {
-	        type: 'doughnut',
-	        data: {
-	            labels: /*[[${catItemsLabels}]]*/ [],
-	            datasets: [{
-	                data: /*[[${catItemsData}]]*/ [],
-	                backgroundColor: categoryColors
-	            }]
-	        },
-			options: { 
-				responsive: true,
+		const rawCountLabels = /*[[${catItemsLabels}]]*/ [];
+		const rawCountData = /*[[${catItemsData}]]*/ [];
+		const sortedCount = sortDataDescending(rawCountLabels, rawCountData);
+		new Chart(document.getElementById('categoryItemsChart'), {
+		    type: 'doughnut',
+		    data: {
+		        labels: sortedCount.labels,
+		        datasets: [{
+		            data: sortedCount.data,
+		            backgroundColor: getColorsForLabels(sortedCount.labels)
+		        }]
+		    },
+		    options: { 
+		        responsive: true,
 		        plugins: { 
-		            legend: { position: 'bottom' },
+		            legend: { display: false },
 		            tooltip: getPieTooltipOptions('個') 
 		        } 
 		    }
-	    });
+		});
 		
 		/* アクティブユーザー数グラフ */
         new Chart(document.getElementById('activeUserChart').getContext('2d'), {

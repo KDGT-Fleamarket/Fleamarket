@@ -34,6 +34,11 @@ public class UserService {
 		return repo.findByEmail(email);
 	}
 
+	public User findByEmail(String email) {
+		return repo.findByEmail(email)
+				.orElseThrow(() -> new RuntimeException("User not found with email: " + email));
+	}
+
 	@Transactional
 	public User saveUser(User user) {
 		return repo.save(user);

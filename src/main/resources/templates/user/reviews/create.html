@@ -17,7 +17,7 @@
 		<p>商品「
 			<!-- 対象商品名 -->			
 			<span th:text="${order.item.name}"></span>
-			」の出品者「
+			」と出品者「
 			<!-- 出品者名 -->
 			<span th:text="${order.item.seller.name}"></span>
 			」を評価してください。
@@ -45,7 +45,7 @@
 				<!-- 送信ボタン -->
 				<button type="submit">評価を送信</button>
 				<!-- キャンセル：購入履歴へ戻る -->
-				<a th:href="@{/my-page/orders}" class="button secondary">キャンセル</a>
+				<a th:href="@{/my-page/orders}" class="button secondary">あとで評価する</a>
 			</div>
 		</form>
 	</div>

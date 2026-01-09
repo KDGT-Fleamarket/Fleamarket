@@ -54,7 +54,7 @@ public class User {
 	@Column(name = "line_id")
 	private String lineId;
 
-	@Column(length = 255)
+	@Column(nullable = false, length = 255)
 	private String address;
 
 	@Column(name = "last_login_at", nullable = false)
