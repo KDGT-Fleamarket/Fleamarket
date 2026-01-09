@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.example.fleamarket.entity.Item;
 import com.example.fleamarket.service.AppOrderService;
 import com.example.fleamarket.service.ItemService;
+import com.example.fleamarket.service.StatisticsService;
 
 @Controller
 @RequestMapping("/admin")
@@ -28,10 +30,13 @@ public class AdminController {
 
 	private final ItemService itemService;
 	private final AppOrderService appOrderService;
+	private final StatisticsService statisticsService;
 
-	public AdminController(ItemService itemService, AppOrderService appOrderService) {
+	public AdminController(ItemService itemService, AppOrderService appOrderService,
+			StatisticsService statisticsService) {
 		this.itemService = itemService;
 		this.appOrderService = appOrderService;
+		this.statisticsService = statisticsService;
 	}
 
 	@GetMapping("/items")
@@ -67,10 +72,34 @@ public class AdminController {
 		if (endDate == null)
 			endDate = LocalDate.now();
 
+		Map<String, Object> revenueChart = statisticsService.getRevenueChartData(startDate, endDate);
+		Map<String, Object> activityChart = statisticsService.getActivityChartData(startDate, endDate);
+		Map<String, Object> categorySales = statisticsService.getCategoryChartData(startDate, endDate);
+		Map<String, Object> categoryItems = statisticsService.getItemCategoryChartData(startDate, endDate);
+		Map<String, Object> activeUserChart = statisticsService.getActiveUserChartData(startDate, endDate);
+
 		model.addAttribute("startDate", startDate);
 		model.addAttribute("endDate", endDate);
 		model.addAttribute("totalSales", appOrderService.getTotalSales(startDate, endDate));
 		model.addAttribute("orderCountByStatus", appOrderService.getOrderCountByStatus(startDate, endDate));
+
+		model.addAttribute("revenueLabels", revenueChart.get("labels"));
+		model.addAttribute("revenueSales", revenueChart.get("sales"));
+		model.addAttribute("revenueCounts", revenueChart.get("counts"));
+
+		model.addAttribute("activityLabels", activityChart.get("labels"));
+		model.addAttribute("activityUsers", activityChart.get("users"));
+		model.addAttribute("activityItems", activityChart.get("items"));
+
+		model.addAttribute("catSalesLabels", categorySales.get("labels"));
+		model.addAttribute("catSalesData", categorySales.get("data"));
+
+		model.addAttribute("catItemsLabels", categoryItems.get("labels"));
+		model.addAttribute("catItemsData", categoryItems.get("data"));
+
+		model.addAttribute("activeUserLabels", activeUserChart.get("labels"));
+		model.addAttribute("activeUserData", activeUserChart.get("data"));
+
 		return "admin/statistics";
 	}
 

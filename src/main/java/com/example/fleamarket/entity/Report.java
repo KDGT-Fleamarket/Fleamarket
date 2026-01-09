@@ -33,7 +33,7 @@ public class Report {
 	@JoinColumn(name = "reporter_id", nullable = false)
 	private User reporter;
 
-	@Enumerated(EnumType.STRING) // PostgreSQLのENUMと合わせる
+	@Enumerated(EnumType.STRING)
 	@Column(name = "report_type", nullable = false)
 	private ReportType reportType;
 

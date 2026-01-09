@@ -1,7 +1,6 @@
 //資料P88
 package com.example.fleamarket.service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -62,7 +61,6 @@ public class UserService {
 		user.setRole("USER");
 		user.setEnabled(true);
 		user.setBanned(false);
-		user.setLastLoginAt(LocalDateTime.now());
 
 		repo.save(user);
 	}
@@ -73,11 +71,10 @@ public class UserService {
 		String encodedPassword = passwordEncoder.encode(user.getPassword());
 		user.setPassword(encodedPassword);
 
-		// 管理者用のデフォルト設定
+		// 管理者用のデフォルト値設定
 		user.setRole("ADMIN");
 		user.setEnabled(true);
 		user.setBanned(false);
-		user.setLastLoginAt(LocalDateTime.now());
 
 		repo.save(user);
 	}

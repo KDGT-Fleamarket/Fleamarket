@@ -39,7 +39,7 @@ public class AppOrder {
 
 	private String status = "購入済"; // default status
 
-	@Column(name = "created_at", nullable = false) // New field
+	@Column(name = "created_at", nullable = false)
 	private LocalDateTime createdAt = LocalDateTime.now();
 
 	@Column(name = "payment_intent_id", unique = true)
