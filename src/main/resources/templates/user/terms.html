@@ -15,7 +15,12 @@
 
 		    <div th:if="${isViewOnly == null}" style="margin-top: 20px;">
 		        <form th:action="@{/terms/agree}" method="post">
-		            <button type="submit" class="button">規約に同意して利用を開始する</button>
+					<div class="button-group">
+	            		<button type="submit" class="button">規約に同意して利用を開始する</button>
+						<a th:href="@{/login}" class="button secondary">
+		                	同意せずにログイン画面へ戻る
+		            	</a>
+					</div>
 		        </form>
 		    </div>
 

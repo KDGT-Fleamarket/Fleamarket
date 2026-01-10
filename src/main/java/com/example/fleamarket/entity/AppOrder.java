@@ -37,7 +37,7 @@ public class AppOrder {
 	@Column(nullable = false)
 	private BigDecimal price;
 
-	private String status = "購入済"; // default status
+	private String status = "購入済"; // 購入済→発送済→完了
 
 	@Column(name = "created_at", nullable = false)
 	private LocalDateTime createdAt = LocalDateTime.now();

@@ -17,7 +17,6 @@ public class SecurityConfig {
 	private final CustomUserDetailsService customUserDetailsService;
 	private final CustomAuthenticationSuccessHandler successHandler;
 
-	// コンストラクタで受け取るように変更
 	public SecurityConfig(CustomUserDetailsService customUserDetailsService,
 			CustomAuthenticationSuccessHandler successHandler) {
 		this.customUserDetailsService = customUserDetailsService;
@@ -45,7 +44,6 @@ public class SecurityConfig {
 						.successHandler(successHandler)
 						.failureUrl("/login?error")
 						.permitAll());
-		// ログを仕込んだクラスを明示的にセットします
 		http.userDetailsService(customUserDetailsService);
 
 		return http.build();

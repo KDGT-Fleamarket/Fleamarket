@@ -16,7 +16,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "login_logs")
+@Table(name = "login_log")
 @Data
 @NoArgsConstructor
 public class LoginLog {

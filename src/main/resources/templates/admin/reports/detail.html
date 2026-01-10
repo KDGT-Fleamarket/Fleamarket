@@ -9,6 +9,11 @@
 
 	<div class="container">
 	    <h2>お問い合わせ詳細</h2>
+		
+		<div th:if="${successMessage}" class="alert alert-success">
+	        <span th:text="${successMessage}"></span>
+	    </div>
+					
 	    <p>送信者: <span th:text="${report.reporter.name}"></span></p>
 	    
 	    <form th:action="@{/admin/reports/update}" method="post">
