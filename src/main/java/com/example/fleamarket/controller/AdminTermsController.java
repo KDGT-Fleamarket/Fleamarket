@@ -28,7 +28,6 @@ public class AdminTermsController {
 		this.termsService = termsService;
 	}
 
-	// 規約一覧
 	@GetMapping
 	public String list(@RequestParam(required = false) String q,
 			@RequestParam(required = false) String date,
@@ -43,24 +42,20 @@ public class AdminTermsController {
 		return "admin/terms/list";
 	}
 
-	// 新規規約の作成フォーム
 	@GetMapping("/create")
 	public String showCreateForm(Model model) {
 		model.addAttribute("terms", new Terms());
 		return "admin/terms/create";
 	}
 
-	// 新規規約の保存
 	@PostMapping("/create")
 	public String createTerms(@ModelAttribute Terms terms) {
-		// terms.getEffectiveDate() で管理者が設定した施行日時が保存される
 		termsRepository.save(terms);
 		return "redirect:/admin/terms/list?success";
 	}
 
 	@GetMapping("/detail/{termsVersion}")
 	public String detail(@PathVariable("termsVersion") Long termsVersion, Model model) {
-		// findById は内部的に @Id（terms_version）を使って検索します
 		Terms terms = termsRepository.findById(termsVersion)
 				.orElseThrow(() -> new IllegalArgumentException("Invalid terms Version:" + termsVersion));
 

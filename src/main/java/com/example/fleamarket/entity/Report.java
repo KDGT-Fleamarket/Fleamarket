@@ -41,7 +41,7 @@ public class Report {
 	private String message;
 
 	@Column(nullable = false, length = 20)
-	private String status = "未処理";
+	private String status = "未処理"; // 未処理→対応中→対処済→完了
 
 	@Column(name = "created_at", nullable = false)
 	private LocalDateTime createdAt = LocalDateTime.now();

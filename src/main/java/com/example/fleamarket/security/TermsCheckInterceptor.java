@@ -30,16 +30,17 @@ public class TermsCheckInterceptor implements HandlerInterceptor {
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
 			throws Exception {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		// ログインしていない、または静的ファイル/規約/ログアウトならチェックしない
+		// ログインしていない、または静的ファイル/規約/ログイン/ログアウトならチェックしない
 		String path = request.getRequestURI();
 		if (auth == null || !auth.isAuthenticated() || auth instanceof AnonymousAuthenticationToken ||
-				path.startsWith("/terms") || path.startsWith("/logout") || path.contains(".")) {
+				path.startsWith("/terms") || path.startsWith("/login") || path.startsWith("/logout")
+				|| path.contains(".")) {
 			return true;
 		}
 
 		Set<String> roles = AuthorityUtils.authorityListToSet(auth.getAuthorities());
 		if (!roles.contains("ROLE_USER")) {
-			return true; // ADMINなど、USER以外のロールは規約チェックを免除
+			return true; // USER以外のロールは規約チェックを免除
 		}
 
 		// 1. 最新の規約（施行日が今日以前で最新のもの）を取得

@@ -202,8 +202,8 @@
 		                type: 'bar', // 会員数は棒グラフ
 		                label: '新規会員数 (人)',
 		                data: userData,
-		                backgroundColor: 'rgba(54, 162, 235, 0.5)',
 		                borderColor: 'rgb(54, 162, 235)',
+						backgroundColor: 'rgba(54, 162, 235, 0.5)',
 		                borderWidth: 1,
 		                yAxisID: 'y'
 		            },
@@ -349,7 +349,7 @@
 		
 		/* アクティブユーザー数グラフ */
         new Chart(document.getElementById('activeUserChart').getContext('2d'), {
-            type: 'line', // 折れ線グラフ
+            type: 'line', 
             data: {
                 labels: /*[[${activeUserLabels}]]*/ [],
                 datasets: [{

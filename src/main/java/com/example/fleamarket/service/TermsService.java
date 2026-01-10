@@ -35,7 +35,6 @@ public class TermsService {
 			}
 		}
 
-		// 3つの引数を渡すように変更
 		return termsRepository.searchTerms(query, date, hasDate);
 	}
 }

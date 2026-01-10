@@ -6,9 +6,11 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import com.example.fleamarket.entity.LoginLog;
 
+@Repository
 public interface LoginLogRepository extends JpaRepository<LoginLog, Long> {
 	// 集計用：アクティブユーザー（同じユーザーが1日に何度もログインしても1人と数える）
 	@Query("SELECT CAST(l.loginAt AS date) as day, COUNT(DISTINCT l.user.id) " +

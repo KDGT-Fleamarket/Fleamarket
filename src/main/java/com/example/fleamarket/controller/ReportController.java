@@ -22,7 +22,6 @@ public class ReportController {
 	private final ReportService reportService;
 	private final UserService userService;
 
-	// 2. コンストラクタ注入に統一
 	public ReportController(ReportService reportService, UserService userService) {
 		this.reportService = reportService;
 		this.userService = userService;

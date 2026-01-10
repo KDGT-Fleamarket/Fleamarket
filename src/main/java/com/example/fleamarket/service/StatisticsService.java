@@ -69,7 +69,7 @@ public class StatisticsService {
 		return chartData;
 	}
 
-	// 新規登録者数・新規出品数
+	// 新規登録者数・新規出品数データ
 	public Map<String, Object> getActivityChartData(LocalDate start, LocalDate end) {
 		LocalDateTime startDT = start.atStartOfDay();
 		LocalDateTime endDT = end.atTime(LocalTime.MAX);
@@ -100,7 +100,7 @@ public class StatisticsService {
 		return chartData;
 	}
 
-	// カテゴリ別売上グラフ
+	// カテゴリ別売上グラフデータ
 	public Map<String, Object> getCategoryChartData(LocalDate start, LocalDate end) {
 		LocalDateTime startDT = start.atStartOfDay();
 		LocalDateTime endDT = end.atTime(LocalTime.MAX);
@@ -121,7 +121,7 @@ public class StatisticsService {
 		return chartData;
 	}
 
-	// カテゴリ別出品数グラフ
+	// カテゴリ別出品数データ
 	public Map<String, Object> getItemCategoryChartData(LocalDate start, LocalDate end) {
 		LocalDateTime startDT = start.atStartOfDay();
 		LocalDateTime endDT = end.atTime(LocalTime.MAX);
@@ -142,7 +142,7 @@ public class StatisticsService {
 		return chartData;
 	}
 
-	// アクティブユーザー数
+	// アクティブユーザー数データ
 	public Map<String, Object> getActiveUserChartData(LocalDate start, LocalDate end) {
 		LocalDateTime startDT = start.atStartOfDay();
 		LocalDateTime endDT = end.atTime(LocalTime.MAX);

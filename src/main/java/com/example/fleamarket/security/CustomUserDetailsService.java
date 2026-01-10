@@ -36,7 +36,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 		return new org.springframework.security.core.userdetails.User(
 				u.getEmail(),
 				u.getPassword(),
-				// DBのroleが "USER" なら "ROLE_USER" になるように設定されています
+				// DBのroleが "USER" なら "ROLE_USER" になる
 				List.of(new SimpleGrantedAuthority("ROLE_" + u.getRole())));
 	}
 }

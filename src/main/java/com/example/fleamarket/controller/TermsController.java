@@ -38,9 +38,9 @@ public class TermsController {
 	@PostMapping("/terms/agree")
 	public String agree(@AuthenticationPrincipal UserDetails userDetails) {
 		User user = userRepository.findByEmailIgnoreCase(userDetails.getUsername()).orElseThrow();
-		user.setTermsAgreedAt(LocalDateTime.now()); // 同意日時を更新
+		user.setTermsAgreedAt(LocalDateTime.now());
 		userRepository.save(user);
-		return "redirect:/items"; // 同意後は商品一覧へ
+		return "redirect:/items";
 	}
 
 	@GetMapping("/terms/view")
@@ -49,8 +49,8 @@ public class TermsController {
 		termsRepository.findFirstByEffectiveDateLessThanEqualOrderByEffectiveDateDescTermsVersionDesc(LocalDate.now())
 				.ifPresent(t -> model.addAttribute("terms", t));
 
-		// 閲覧専用フラグを立てる
+		// 閲覧専用フラグ
 		model.addAttribute("isViewOnly", true);
-		return "user/terms"; // 同じHTMLテンプレートを使い回す
+		return "user/terms";
 	}
 }

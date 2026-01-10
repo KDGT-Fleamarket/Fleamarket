@@ -89,7 +89,7 @@ public class UserController {
 		Review review = reviewService.getReviewByOrderId(id);
 
 		model.addAttribute("order", order);
-		model.addAttribute("review", review); // reviewがあれば表示、なければnull
+		model.addAttribute("review", review);
 		return "user/orders/detail";
 	}
 
