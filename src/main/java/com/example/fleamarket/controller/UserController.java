@@ -1,7 +1,11 @@
 package com.example.fleamarket.controller;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Map;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -9,7 +13,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.fleamarket.entity.AppOrder;
 import com.example.fleamarket.entity.Review;
@@ -53,6 +60,48 @@ public class UserController {
 
 		model.addAttribute("user", currentUser);
 		return "user/my_page";
+	}
+
+	@GetMapping("/profile/edit")
+	public String editProfile(Principal principal, Model model) {
+		User user = userService.findByEmailIgnoreCase(principal.getName()).orElseThrow();
+		model.addAttribute("user", user);
+		return "user/users/update";
+	}
+
+	@PostMapping("/profile/update")
+	public String updateProfile(@RequestParam String name,
+			@RequestParam String address,
+			@RequestParam String email,
+			@RequestParam(required = false) String password,
+			Principal principal,
+			HttpServletRequest request, // ログアウト用
+			RedirectAttributes redirectAttributes) throws ServletException {
+
+		User user = userService.findByEmailIgnoreCase(principal.getName()).orElseThrow();
+
+		boolean isEmailChanged = !user.getEmail().equalsIgnoreCase(email);
+		boolean isPasswordChanged = (password != null && !password.isBlank());
+
+		// メールアドレス重複チェック
+		if (isEmailChanged) {
+			if (userService.getUserByEmail(email).isPresent()) {
+				redirectAttributes.addFlashAttribute("errorMessage", "そのメールアドレスは既に登録されています。");
+				return "redirect:/my-page/profile/edit";
+			}
+		}
+
+		userService.updateProfile(user.getId(), name, address, email, password);
+
+		// メールアドレスまたはパスワードが変わった場合は強制ログアウト
+		if (isEmailChanged || isPasswordChanged) {
+			request.logout();
+			redirectAttributes.addFlashAttribute("successMessage", "認証情報が変更されました。新しい情報で再度ログインしてください。");
+			return "redirect:/login";
+		}
+		// 名前や住所だけの更新ならマイページへ
+		redirectAttributes.addFlashAttribute("successMessage", "アカウント情報を更新しました。");
+		return "redirect:/my-page";
 	}
 
 	@GetMapping("/selling")

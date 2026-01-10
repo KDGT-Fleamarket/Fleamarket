@@ -74,6 +74,7 @@
 		<p><strong>メールアドレス:</strong> <span th:text="${user.email}"></span></p>
 		<!-- role(不要かも) -->
 		<p><strong>役割:</strong> <span th:text="${user.role}"></span></p>
+		<a th:href="@{/my-page/profile/edit}" class="button">編集する</a>
 	</div>
 </body>
 
