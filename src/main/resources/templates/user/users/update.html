@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>プロフィール編集</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <div class="container">
+        <h1>アカウント情報の編集</h1>
+
+        <section class="info-card">
+			<div class="alert alert-warning">
+                <p>【ご注意】</p>
+                <p>メールアドレスまたはパスワードを変更すると、セキュリティ保護のため自動的にログアウトされます。更新後は新しい情報で再度ログインしてください。</p>
+            </div>
+            <form th:action="@{/my-page/profile/update}" method="post">
+				<div>
+		            <label>メールアドレス</label>
+					<small>※変更すると再ログインが必要です</small>
+		            <input type="email" name="email" th:value="${user.email}" required class="form-control">
+		        </div>
+				<div>
+		            <label>新しいパスワード (変更する場合のみ入力)</label>
+					<small>※変更しない場合は空欄のままにしてください。変更後は再ログインが必要です。</small>
+		            <input type="password" name="password" class="form-control" placeholder="8文字以上を推奨">
+		        </div>
+                <div>
+                    <label>お名前</label>
+                    <input type="text" name="name" th:value="${user.name}" required>
+                </div>
+                <div>
+                    <label>住所</label>
+                    <textarea name="address" th:text="${user.address}" rows="3" required
+                              placeholder="例：東京都渋谷区1-2-3 〇〇マンション101"></textarea>
+                </div>
+
+                <div class="button-group">
+                    <button type="submit" class="button">変更を保存する</button>
+                    <a th:href="@{/my-page}" class="button secondary">キャンセル</a>
+                </div>
+            </form>
+        </section>
+    </div>
+</body>
+</html>

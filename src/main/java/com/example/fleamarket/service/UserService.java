@@ -83,4 +83,22 @@ public class UserService {
 
 		repo.save(user);
 	}
+
+	public Optional<User> findByEmailIgnoreCase(String email) {
+		return repo.findByEmailIgnoreCase(email);
+	}
+
+	@Transactional
+	public void updateProfile(Long userId, String name, String address, String email, String newPassword) {
+		User user = repo.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+
+		user.setName(name);
+		user.setAddress(address);
+		user.setEmail(email);
+		if (newPassword != null && !newPassword.isBlank()) {
+			user.setPassword(passwordEncoder.encode(newPassword));
+		}
+
+		repo.save(user);
+	}
 }
