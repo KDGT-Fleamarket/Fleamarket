@@ -64,13 +64,15 @@
 					<td th:text="${item.status}"></td>
 					<!-- 削除ボタン -->
 					<td>
-						<!-- 管理者による削除 -->
+						<!-- 管理者による削除 
 						<form th:action="@{/admin/items/{id}/delete(id=${item.id})}" method="post"
 							style="display:inline;">
-							<!-- 削除ボタン(confirm で最終確認) -->
+							-- 削除ボタン(confirm で最終確認) --
 							<button type="submit" class="button danger" onclick="return
 									confirm('本当にこの商品を削除しますか？');">削除</button>
-						</form>
+						</form> -->
+						<!-- 管理詳細リンク -->
+						<a th:href="@{/admin/items/{id}(id=${item.id})}" class="button">詳細</a>
 					</td>
 				</tr>
 				<!-- 空の場合 -->

@@ -17,7 +17,7 @@
 		<!-- ページ見出し -->
 		<h1>管理者ダッシュボード</h1>
 		<!-- ユーザー名を Spring Security の認証情報から表示 -->
-		<p>ようこそ、<span sec:authentication="name"></span>さん！ (管理者)</p>
+		<p>ようこそ、<span th:text="${adminName}"></span>さん！ (管理者)</p>
 		
 		<!-- 主要ナビゲーション -->
 		<div class="main-nav">

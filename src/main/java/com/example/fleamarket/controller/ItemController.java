@@ -37,7 +37,7 @@ public class ItemController {
 	private final UserService userService;
 	private final ChatService chatService;
 	private final FavoriteService favoriteService;
-	private final ReviewService reviewService; // Declare ReviewService
+	private final ReviewService reviewService;
 
 	public ItemController(ItemService itemService, CategoryService categoryService, UserService userService,
 			ChatService chatService, FavoriteService favoriteService, ReviewService reviewService) {
@@ -46,7 +46,7 @@ public class ItemController {
 		this.userService = userService;
 		this.chatService = chatService;
 		this.favoriteService = favoriteService;
-		this.reviewService = reviewService; // Initialize ReviewService
+		this.reviewService = reviewService;
 	}
 
 	@GetMapping
