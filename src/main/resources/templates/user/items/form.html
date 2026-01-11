@@ -80,7 +80,7 @@
 				<!-- 新規なら「出品する」、編集なら「更新する」 -->
 				<button type="submit" th:text="${item.id == null ? '出品する' : '更新する'}"></button>
 				<!-- 一覧へ戻る -->
-				<a th:href="@{/items}" class="button secondary">キャンセル</a>
+				<a href="javascript:void(0);" onclick="history.back();" class="button secondary">キャンセル</a>
 			</div>
 		</form>
 	</div>

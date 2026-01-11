@@ -31,6 +31,7 @@ public class DashboardController {
 				.orElseThrow(() -> new RuntimeException("User not found"));
 
 		if ("ADMIN".equals(currentUser.getRole())) {
+			model.addAttribute("adminName", currentUser.getName());
 			model.addAttribute("recentItems", itemService.getAllItems());
 			model.addAttribute("recentOrders", appOrderService.getAllOrders());
 			return "admin/dashboard";

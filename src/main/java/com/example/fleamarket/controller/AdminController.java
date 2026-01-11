@@ -3,7 +3,6 @@ package com.example.fleamarket.controller;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Map;
 
 import jakarta.servlet.http.HttpServletResponse;
@@ -13,14 +12,10 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.example.fleamarket.entity.Item;
 import com.example.fleamarket.service.AppOrderService;
-import com.example.fleamarket.service.ItemService;
 import com.example.fleamarket.service.StatisticsService;
 
 @Controller
@@ -28,35 +23,13 @@ import com.example.fleamarket.service.StatisticsService;
 @PreAuthorize("hasRole('ADMIN')")
 public class AdminController {
 
-	private final ItemService itemService;
 	private final AppOrderService appOrderService;
 	private final StatisticsService statisticsService;
 
-	public AdminController(ItemService itemService, AppOrderService appOrderService,
+	public AdminController(AppOrderService appOrderService,
 			StatisticsService statisticsService) {
-		this.itemService = itemService;
 		this.appOrderService = appOrderService;
 		this.statisticsService = statisticsService;
-	}
-
-	@GetMapping("/items")
-	public String manageItems(@RequestParam(required = false) String q,
-			@RequestParam(required = false) String status,
-			Model model) {
-
-		List<Item> items = itemService.searchItemsForAdmin(q, status);
-
-		model.addAttribute("items", items);
-		model.addAttribute("q", q); // 検索窓の値を保持
-		model.addAttribute("status", status); // セレクトボックスの値を保持
-
-		return "admin/items/list";
-	}
-
-	@PostMapping("/items/{id}/delete")
-	public String deleteItemByAdmin(@PathVariable("id") Long itemId) {
-		itemService.deleteItem(itemId);
-		return "redirect:/admin/items?success=deleted";
 	}
 
 	@GetMapping("/statistics")
