@@ -34,6 +34,9 @@ public class AppOrder {
 	@JoinColumn(name = "buyer_id", nullable = false)
 	private User buyer;
 
+	@Column(name = "shipping_address", nullable = false)
+	private String shippingAddress; // 決済時の住所
+
 	@Column(nullable = false)
 	private BigDecimal price;
 

@@ -5,21 +5,27 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.fleamarket.entity.Chat;
+import com.example.fleamarket.entity.ChatRoomStatus;
 import com.example.fleamarket.entity.Item;
 import com.example.fleamarket.entity.User;
 import com.example.fleamarket.repository.ChatRepository;
+import com.example.fleamarket.repository.ChatRoomStatusRepository;
 import com.example.fleamarket.repository.ItemRepository;
 
 @Service
 public class ChatService {
 
 	private final ChatRepository chatRepository;
+	private final ChatRoomStatusRepository chatRoomStatusRepository;
 	private final ItemRepository itemRepository;
 
-	public ChatService(ChatRepository chatRepository, ItemRepository itemRepository) {
+	public ChatService(ChatRepository chatRepository, ChatRoomStatusRepository chatRoomStatusRepository,
+			ItemRepository itemRepository) {
 		this.chatRepository = chatRepository;
+		this.chatRoomStatusRepository = chatRoomStatusRepository;
 		this.itemRepository = itemRepository;
 	}
 
@@ -41,23 +47,26 @@ public class ChatService {
 
 		Chat savedChat = chatRepository.save(chat);
 
-		// Send LINE notification to the other party in the chat
-		User receiver = null;
-		if (item.getSeller().equals(sender)) {
-			// If sender is seller, receiver is buyer (if item is sold)
-			// This logic needs to be refined if chat is before purchase
-			// For now, assuming chat is always between seller and buyer of a purchased item
-			// Or, if chat is before purchase, the other party is always the seller
-			// For simplicity, let's assume the chat is always between the item's seller and the current sender's counterpart
-			// If sender is seller, receiver is the buyer of the item (if any order exists)
-			// If sender is buyer, receiver is the seller of the item
-			receiver = item.getSeller(); // Default to seller if sender is buyer
-			// If sender is seller, we need to find the buyer from an order associated with this item
-			// This requires more complex logic, for now, let's simplify: chat is always with the seller
-		} else { // Sender is buyer
-			receiver = item.getSeller();
-		}
+		updateLastViewed(sender, item);
 
 		return savedChat;
+	}
+
+	@Transactional
+	public void updateLastViewed(User user, Item item) {
+		ChatRoomStatus status = chatRoomStatusRepository.findByUserAndItem(user, item)
+				.orElseGet(() -> {
+					ChatRoomStatus newStatus = new ChatRoomStatus();
+					newStatus.setUser(user);
+					newStatus.setItem(item);
+					return newStatus;
+				});
+
+		status.setLastViewedAt(LocalDateTime.now());
+		chatRoomStatusRepository.save(status);
+	}
+
+	public List<Item> getUnreadItemsForUser(User user) {
+		return chatRepository.findItemsWithUnreadMessages(user);
 	}
 }

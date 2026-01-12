@@ -17,6 +17,14 @@
 		<p>ようこそ、<span th:text="${user.name}"></span>さん！</p>
 		
 		<div class="notification-area">
+			
+			<div th:each="item : ${unreadItems}" class="alert alert-success">
+		        <p>
+		            <strong>【新着チャット】</strong> 
+		            商品「<span th:text="${item.name}"></span>」に新しいメッセージがあります。
+		            <a th:href="@{/items/{id}(id=${item.id})}" class="button small">チャットを見る</a>
+		        </p>
+	    	</div>
 					
 			<div th:each="report : ${noticeReports}" class="alert alert-info">
 				<p>

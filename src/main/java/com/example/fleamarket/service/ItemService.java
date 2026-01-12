@@ -21,13 +21,11 @@ import com.example.fleamarket.repository.ItemRepository;
 public class ItemService {
 
 	private final ItemRepository itemRepository;
-	private final CategoryService categoryService;
 	private final CloudinaryService cloudinaryService;
 
-	public ItemService(ItemRepository itemRepository, CategoryService categoryService,
+	public ItemService(ItemRepository itemRepository,
 			CloudinaryService cloudinaryService) {
 		this.itemRepository = itemRepository;
-		this.categoryService = categoryService;
 		this.cloudinaryService = cloudinaryService;
 	}
 
