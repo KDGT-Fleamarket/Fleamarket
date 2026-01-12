@@ -78,7 +78,9 @@ public class ItemController {
 		if (userDetails != null) {
 			User currentUser = userService.getUserByEmail(userDetails.getUsername())
 					.orElseThrow(() -> new RuntimeException("User not found"));
-			chatService.updateLastViewed(currentUser, item.get());
+			if (chatService.hasChatHistory(item.get(), currentUser)) {
+				chatService.updateLastViewed(currentUser, item.get());
+			}
 			model.addAttribute("isFavorited", favoriteService.isFavorited(currentUser, id));
 		}
 

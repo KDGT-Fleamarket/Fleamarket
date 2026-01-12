@@ -23,4 +23,8 @@ public interface ChatRepository extends JpaRepository<Chat, Long> {
 			"AND c.sender <> :user " +
 			"AND c.createdAt > COALESCE(s.lastViewedAt, '2000-01-01 00:00:00')")
 	List<Item> findItemsWithUnreadMessages(@Param("user") User user);
+
+	// チャットに関わっているか
+	@Query("SELECT COUNT(c) > 0 FROM Chat c WHERE c.item = :item AND (c.sender = :user OR c.item.seller = :user)")
+	boolean existsByItemAndUserInvolvement(@Param("item") Item item, @Param("user") User user);
 }

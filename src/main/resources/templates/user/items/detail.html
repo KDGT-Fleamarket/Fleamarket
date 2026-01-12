@@ -197,6 +197,13 @@
 	    });
 
 	    window.onload = connect;
+		
+		document.addEventListener("DOMContentLoaded", function() {
+            const chatBox = document.getElementById("chat-messages");
+            if (chatBox) {
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }
+        });
 	</script>
 </body>
 
