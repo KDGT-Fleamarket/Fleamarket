@@ -18,7 +18,7 @@
 		        <tr><th>ステータス</th><td th:text="${order.status}"></td></tr>
 		        <tr><th>購入日時</th><td th:text="${#temporals.format(order.createdAt, 'yyyy/MM/dd HH:mm')}"></td></tr>
 		        <tr><th>出品者</th><td th:text="${order.item.seller.name} + ' 様'"></td></tr>
-		        <tr><th>お届け先住所</th><td th:text="${order.buyer.address}"></td></tr>
+		        <tr><th>お届け先住所</th><td th:text="${order.shippingAddress}"></td></tr>
 		    </table>
 		</section>
 

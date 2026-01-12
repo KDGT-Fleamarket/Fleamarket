@@ -19,9 +19,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.fleamarket.entity.AppOrder;
+import com.example.fleamarket.entity.Item;
 import com.example.fleamarket.entity.Review;
 import com.example.fleamarket.entity.User;
 import com.example.fleamarket.service.AppOrderService;
+import com.example.fleamarket.service.ChatService;
 import com.example.fleamarket.service.FavoriteService;
 import com.example.fleamarket.service.ItemService;
 import com.example.fleamarket.service.ReportService;
@@ -38,15 +40,18 @@ public class UserController {
 	private final FavoriteService favoriteService;
 	private final ReviewService reviewService;
 	private final ReportService reportService;
+	private final ChatService chatService;
 
 	public UserController(UserService userService, ItemService itemService, AppOrderService appOrderService,
-			FavoriteService favoriteService, ReviewService reviewService, ReportService reportService) {
+			FavoriteService favoriteService, ReviewService reviewService, ReportService reportService,
+			ChatService chatService) {
 		this.userService = userService;
 		this.itemService = itemService;
 		this.appOrderService = appOrderService;
 		this.favoriteService = favoriteService;
 		this.reviewService = reviewService;
 		this.reportService = reportService;
+		this.chatService = chatService;
 	}
 
 	@GetMapping
@@ -54,6 +59,9 @@ public class UserController {
 		User currentUser = userService.getUserByEmail(userDetails.getUsername())
 				.orElseThrow(() -> new RuntimeException("User not found"));
 
+		List<Item> unreadItems = chatService.getUnreadItemsForUser(currentUser);
+
+		model.addAttribute("unreadItems", unreadItems);
 		model.addAttribute("noticeReports", reportService.getNotifiableReports(currentUser));
 		model.addAttribute("noticeSales", appOrderService.getActionRequiredSales(currentUser));
 		model.addAttribute("noticeOrders", appOrderService.getActionRequiredOrders(currentUser));

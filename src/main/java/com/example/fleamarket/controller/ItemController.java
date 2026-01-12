@@ -13,6 +13,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
@@ -66,11 +67,21 @@ public class ItemController {
 
 	@GetMapping("/{id}")
 	public String showItemDetail(@PathVariable("id") Long id, @AuthenticationPrincipal UserDetails userDetails,
+			@RequestHeader(value = "referer", required = false) String referer,
 			Model model) {
 		Optional<Item> item = itemService.getItemById(id);
 		if (item.isEmpty()) {
 			return "redirect:/items"; // Item not found
 		}
+
+		// 閲覧時刻を更新
+		if (userDetails != null) {
+			User currentUser = userService.getUserByEmail(userDetails.getUsername())
+					.orElseThrow(() -> new RuntimeException("User not found"));
+			chatService.updateLastViewed(currentUser, item.get());
+			model.addAttribute("isFavorited", favoriteService.isFavorited(currentUser, id));
+		}
+
 		model.addAttribute("item", item.get());
 		model.addAttribute("chats", chatService.getChatMessagesByItem(id));
 
@@ -83,6 +94,16 @@ public class ItemController {
 					.orElseThrow(() -> new RuntimeException("User not found"));
 			model.addAttribute("isFavorited", favoriteService.isFavorited(currentUser, id));
 		}
+
+		String backUrl = "/items";
+		if (referer != null) {
+			if (referer.contains("/my-page")) {
+				backUrl = "/my-page";
+			} else {
+				backUrl = referer;
+			}
+		}
+		model.addAttribute("backUrl", backUrl);
 		return "user/items/detail";
 	}
 

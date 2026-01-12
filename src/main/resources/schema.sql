@@ -65,6 +65,7 @@ CREATE TABLE app_order (
 	status VARCHAR(20) DEFAULT '購入済',
 	payment_intent_id VARCHAR(128),
 	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	shipping_address VARCHAR(255), NOT NULL,
 	FOREIGN KEY (item_id) REFERENCES item(id),
 	FOREIGN KEY (buyer_id) REFERENCES users(id)
 );

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.fleamarket.entity.Chat;
+import com.example.fleamarket.entity.Item;
 import com.example.fleamarket.entity.User;
 import com.example.fleamarket.service.ChatService;
 import com.example.fleamarket.service.ItemService;
@@ -37,9 +38,18 @@ public class ChatController {
 	}
 
 	@GetMapping("/{itemId}")
-	public String showChatScreen(@PathVariable("itemId") Long itemId, Model model) {
-		model.addAttribute("item", itemService.getItemById(itemId)
-				.orElseThrow(() -> new RuntimeException("Item not found")));
+	public String showChatScreen(@PathVariable("itemId") Long itemId, @AuthenticationPrincipal UserDetails userDetails,
+			Model model) {
+		Item item = itemService.getItemById(itemId)
+				.orElseThrow(() -> new RuntimeException("Item not found"));
+
+		// 閲覧時間更新
+		if (userDetails != null) {
+			User currentUser = userService.getUserByEmail(userDetails.getUsername()).orElseThrow();
+			chatService.updateLastViewed(currentUser, item);
+		}
+
+		model.addAttribute("item", item);
 		model.addAttribute("chats", chatService.getChatMessagesByItem(itemId));
 		return "user/items/detail"; // Re-use item_detail for chat display
 	}
@@ -57,11 +67,9 @@ public class ChatController {
 
 	@MessageMapping("/chat/{itemId}")
 	public void handleChatMessage(@DestinationVariable Long itemId, ChatMessage messageDTO) {
-		// ユーザー取得
 		User sender = userService.getUserByEmail(messageDTO.getSenderEmail())
 				.orElseThrow(() -> new RuntimeException("User not found"));
 
-		// DB保存 (ChatServiceのsendMessageを活用)
 		Chat savedChat = chatService.sendMessage(itemId, sender, messageDTO.getContent());
 
 		// 全員に配信するデータを整形 (受信側で使う名前や日時をセット)

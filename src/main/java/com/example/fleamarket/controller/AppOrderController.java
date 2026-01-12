@@ -22,7 +22,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.fleamarket.entity.User;
 import com.example.fleamarket.service.AppOrderService;
-import com.example.fleamarket.service.ItemService;
 import com.example.fleamarket.service.UserService;
 import com.stripe.exception.StripeException;
 import com.stripe.model.PaymentIntent;
@@ -33,15 +32,13 @@ public class AppOrderController {
 
 	private final AppOrderService appOrderService;
 	private final UserService userService;
-	private final ItemService itemService;
 
 	@Value("${stripe.public.key}")
 	private String stripePublicKey;
 
-	public AppOrderController(AppOrderService appOrderService, UserService userService, ItemService itemService) {
+	public AppOrderController(AppOrderService appOrderService, UserService userService) {
 		this.appOrderService = appOrderService;
 		this.userService = userService;
-		this.itemService = itemService;
 	}
 
 	@PostMapping("/initiate-purchase") // New endpoint to initiate purchase and get client secret

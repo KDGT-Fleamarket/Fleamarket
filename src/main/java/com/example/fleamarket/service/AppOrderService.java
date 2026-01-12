@@ -72,6 +72,7 @@ public class AppOrderService {
 		appOrder.setStatus("決済待ち"); // New status for pending payment
 		appOrder.setPaymentIntentId(paymentIntent.getId());
 		appOrder.setCreatedAt(LocalDateTime.now()); // Set creation time
+		appOrder.setShippingAddress(buyer.getAddress());
 		appOrderRepository.save(appOrder);
 
 		return paymentIntent;
