@@ -43,8 +43,16 @@
 						th:selected="${param.categoryId == category.id}"></option>
 				</select>
 			</div>
+			<!-- 価格帯 -->
+			<div class="price-range">
+		        <input type="number" name="minPrice" th:value="${minPrice}" placeholder="最小価格">
+		        <span>〜</span>
+		        <input type="number" name="maxPrice" th:value="${maxPrice}" placeholder="最大価格">
+		    </div>
 			<!-- 検索実行ボタン -->
 			<button type="submit" class="button">検索</button>
+			<!--検索条件のリセット-->
+			<a th:href="@{/items}" class="button secondary">リセット</a>
 		</form>
 <!-- 商品一覧 -->
 		<div class="item-grid">
@@ -74,7 +82,7 @@
 			<!-- 前ページが存在する場合のみリンク表示 -->
 			<a th:if="${items.hasPrevious()}" 
 				th:href="@{/items(page=${items.number - 1}, 
-						keyword=${param.keyword}, categoryId=${param.categoryId})}">
+						keyword=${param.keyword}, categoryId=${param.categoryId})}, minPrice=${minPrice}, maxPrice=${maxPrice})}">
 				前へ
 			</a>
 			<!-- 0〜(総ページ-1)のシーケンスを生成してページ番号リンクを作成 -->
@@ -82,7 +90,7 @@
 				<!-- 現在ページ以外はリンクとして表示 -->
 				<a th:if="${i != items.number}" 
 					th:href="@{/items(page=${i}, keyword=${param.keyword}, 
-							categoryId=${param.categoryId})}" 
+							categoryId=${param.categoryId})}, minPrice=${minPrice}, maxPrice=${maxPrice})}" 
 					th:text="${i + 1}"></a>
 				<!-- 現在ページは強調表示（リンクではない） -->
 				<span th:if="${i == items.number}" class="current-page" th:text="${i +1}"></span>
@@ -91,7 +99,7 @@
 			<a th:if="${items.hasNext()}" 
 				th:href="@{/items(page=${items.number + 1}, 
 						keyword=${param.keyword}, 
-						categoryId=${param.categoryId})}">
+						categoryId=${param.categoryId})}, minPrice=${minPrice}, maxPrice=${maxPrice})}">
 				次へ
 			</a>
 		</div>

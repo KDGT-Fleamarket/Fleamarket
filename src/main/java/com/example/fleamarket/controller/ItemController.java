@@ -54,14 +54,21 @@ public class ItemController {
 	public String listItems(
 			@RequestParam(value = "keyword", required = false) String keyword,
 			@RequestParam(value = "categoryId", required = false) Long categoryId,
+			@RequestParam(value = "minPrice", required = false) BigDecimal minPrice,
+			@RequestParam(value = "maxPrice", required = false) BigDecimal maxPrice,
 			@RequestParam(value = "page", defaultValue = "0") int page,
 			@RequestParam(value = "size", defaultValue = "10") int size,
 			Model model) {
-		Page<Item> items = itemService.searchItems(keyword, categoryId, page, size);
+		Page<Item> items = itemService.searchItems(keyword, categoryId, minPrice, maxPrice, page, size);
 		List<Category> categories = categoryService.getAllCategories();
 
 		model.addAttribute("items", items);
 		model.addAttribute("categories", categories);
+
+		model.addAttribute("keyword", keyword);
+		model.addAttribute("categoryId", categoryId);
+		model.addAttribute("minPrice", minPrice);
+		model.addAttribute("maxPrice", maxPrice);
 		return "user/items/list";
 	}
 

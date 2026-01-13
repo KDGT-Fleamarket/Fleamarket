@@ -10,7 +10,7 @@
         <div class="profile-header" style="margin-bottom: 30px; padding: 20px; border-bottom: 2px solid #eee;">
             <h1 th:text="${targetUser.name} + ' さんのショップ'"></h1>
             <div class="rating-info">
-                <span th:if="${reviewCount > 0}">
+                <span th:if="${reviewCount > 0}">平均評価:
                     <span style="color: #f1c40f; font-size: 1.2em;">★</span>
                     <strong th:text="${#numbers.formatDecimal(averageRating, 1, 1)}"></strong>
                     <span th:text="' (' + ${reviewCount} + '件の評価)'" style="color: #666;"></span>
@@ -19,42 +19,34 @@
             </div>
         </div>
 
-        <h2>すべての出品商品</h2>
-        <div class="item-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px;">
-            <div th:each="item : ${items}" class="item-card" style="border: 1px solid #ddd; border-radius: 8px; overflow: hidden; position: relative;">
-                
-                <div style="padding: 15px;">
-                    <h3 th:text="${item.name}" style="font-size: 1.1em; margin-bottom: 10px;"></h3>
-                    <p th:text="'¥' + ${#numbers.formatDecimal(item.price, 0, 'COMMA', 0, 'POINT')}" style="font-weight: bold; color: #e74c3c;"></p>
+		<h2>すべての出品商品</h2>
+        <div class="item-grid">
+            <div class="item-card" th:each="item : ${items}">
+                <a th:href="@{/items/{id}(id=${item.id})}">
+                    <img th:src="${item.imageUrl != null ? item.imageUrl : '/images/placeholder.png'}" 
+                         alt="商品画像">
                     
-                    <div style="margin-top: 10px;">
-                        <span th:if="${item.status == '売却済' or item.status == '発送済' or item.status == '取引完了'}" 
-                              class="status-badge" style="background-color: #95a5a6; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.8em;">
-                            SOLD OUT
-                        </span>
-                        
-                        <span th:if="${item.status == '決済待ち' or item.status == '購入済'}" 
-                              class="status-badge" style="background-color: #f39c12; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.8em;">
-                            取引中
-                        </span>
-                        
-                        <span th:if="${item.status == '出品中'}" 
-                              class="status-badge" style="background-color: #2ecc71; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.8em;">
-                            販売中
-                        </span>
-                    </div>
-
-                    <div style="margin-top: 15px;">
-                        <a th:href="@{/items/{id}(id=${item.id})}" class="button secondary small" style="width: 100%; display: inline-block; text-align: center;">詳細を見る</a>
-                    </div>
-                </div>
+                    <h3 th:text="${item.name}"></h3>
+                    
+                    <p class="price" 
+                       th:text="'¥' + ${#numbers.formatDecimal(item.price, 0, 'COMMA', 0, 'POINT')}">
+                    </p>
+                    
+                    <p class="status">
+                        <span th:if="${item.status == '出品中'}" th:text="${item.status}"></span>
+                        <span th:if="${item.status == '決済待ち' or item.status == '購入済'}" style="color: #f39c12;">取引中</span>
+                        <span th:if="${item.status == '売却済' or item.status == '発送済' or item.status == '取引完了'}" style="color: #95a5a6;">SOLD OUT</span>
+                    </p>
+                </a>
             </div>
         </div>
 
-        <p th:if="${#lists.isEmpty(items)}" style="text-align: center; margin-top: 50px; color: #999;">出品されている商品はまだありません。</p>
-
+        <div th:if="${#lists.isEmpty(items)}">
+            <p>出品されている商品はまだありません。</p>
+        </div>
+		
         <div style="margin-top: 40px;">
-            <a href="javascript:history.back()" class="button secondary">戻る</a>
+            <a th:href="@{/items}" class="button secondary">商品一覧に戻る</a>
         </div>
     </div>
 </body>

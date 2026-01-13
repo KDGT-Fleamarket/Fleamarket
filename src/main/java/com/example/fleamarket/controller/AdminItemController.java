@@ -1,5 +1,6 @@
 package com.example.fleamarket.controller;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -12,8 +13,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.example.fleamarket.entity.Category;
 import com.example.fleamarket.entity.Chat;
 import com.example.fleamarket.entity.Item;
+import com.example.fleamarket.service.CategoryService;
 import com.example.fleamarket.service.ChatService;
 import com.example.fleamarket.service.ItemService;
 import com.example.fleamarket.service.ReviewService;
@@ -26,24 +29,35 @@ public class AdminItemController {
 	private final ItemService itemService;
 	private final ChatService chatService;
 	private final ReviewService reviewService;
+	private final CategoryService categoryService;
 
-	public AdminItemController(ItemService itemService, ChatService chatService, ReviewService reviewService) {
+	public AdminItemController(ItemService itemService, ChatService chatService, ReviewService reviewService,
+			CategoryService categoryService) {
 		this.itemService = itemService;
 		this.chatService = chatService;
 		this.reviewService = reviewService;
+		this.categoryService = categoryService;
 	}
 
 	@GetMapping
 	public String manageItems(@RequestParam(required = false) String q,
 			@RequestParam(required = false) String status,
+			@RequestParam(required = false) Long categoryId,
+			@RequestParam(required = false) BigDecimal minPrice,
+			@RequestParam(required = false) BigDecimal maxPrice,
 			Model model) {
 
-		List<Item> items = itemService.searchItemsForAdmin(q, status);
+		List<Item> items = itemService.searchItemsForAdmin(q, status, categoryId, minPrice, maxPrice);
+		List<Category> categories = categoryService.getAllCategories();
 
 		model.addAttribute("items", items);
+		model.addAttribute("categories", categories);
+
 		model.addAttribute("q", q);
 		model.addAttribute("status", status);
-
+		model.addAttribute("categoryId", categoryId);
+		model.addAttribute("minPrice", minPrice);
+		model.addAttribute("maxPrice", maxPrice);
 		return "admin/items/list";
 	}
 

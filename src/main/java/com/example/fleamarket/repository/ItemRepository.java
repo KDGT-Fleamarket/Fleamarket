@@ -1,5 +1,6 @@
 package com.example.fleamarket.repository;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -17,15 +18,6 @@ import com.example.fleamarket.entity.User;
 
 @Repository
 public interface ItemRepository extends JpaRepository<Item, Long> {
-	Page<Item> findByNameContainingIgnoreCaseAndStatus(String name, String status, Pageable pageable);
-
-	Page<Item> findByCategoryIdAndStatus(Long categoryId, String status, Pageable pageable);
-
-	Page<Item> findByNameContainingIgnoreCaseAndCategoryIdAndStatus(String name, Long categoryId, String status,
-			Pageable pageable);
-
-	Page<Item> findByStatus(String status, Pageable pageable);
-
 	List<Item> findBySellerOrderByIdDesc(User seller);
 
 	@Modifying
@@ -35,14 +27,6 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
 
 	// 全件取得（ID降順）
 	List<Item> findAllByOrderByIdDesc();
-
-	// 検索用 キーワード(name or description) ＋ ステータス
-	@Query("SELECT i FROM Item i WHERE " +
-			"(lower(i.name) LIKE lower(concat('%', :q, '%')) OR lower(i.description) LIKE lower(concat('%', :q, '%'))) "
-			+
-			"AND (:status IS NULL OR i.status = :status) " +
-			"ORDER BY i.id DESC")
-	List<Item> searchForAdmin(@Param("q") String q, @Param("status") String status);
 
 	// 集計用：出品数
 	@Query("SELECT CAST(i.createdAt AS date) as day, COUNT(i.id) " +
@@ -57,4 +41,34 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
 			"WHERE i.createdAt BETWEEN :start AND :end " +
 			"GROUP BY c.name")
 	List<Object[]> findItemCountByCategory(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
+	// USER検索用：出品中 + キーワード + カテゴリ + 価格帯（ID降順）
+	@Query("SELECT i FROM Item i WHERE " +
+			"i.status = '出品中' AND " +
+			"(:q IS NULL OR lower(i.name) LIKE lower(concat('%', CAST(:q AS text), '%')) OR lower(i.description) LIKE lower(concat('%', CAST(:q AS text), '%'))) AND "
+			+
+			"(:categoryId IS NULL OR i.category.id = :categoryId) AND " +
+			"(:minPrice IS NULL OR i.price >= :minPrice) AND " +
+			"(:maxPrice IS NULL OR i.price <= :maxPrice)" +
+			"ORDER BY i.id DESC")
+	Page<Item> searchForUser(@Param("q") String q,
+			@Param("categoryId") Long categoryId,
+			@Param("minPrice") BigDecimal minPrice,
+			@Param("maxPrice") BigDecimal maxPrice,
+			Pageable pageable);
+
+	// ADMIN検索用：キーワード + ステータス + カテゴリ + 価格帯 (ID降順)
+	@Query("SELECT i FROM Item i WHERE " +
+			"(:q IS NULL OR lower(i.name) LIKE lower(concat('%', CAST(:q AS text), '%')) OR lower(i.description) LIKE lower(concat('%', CAST(:q AS text), '%'))) AND "
+			+
+			"(:status IS NULL OR i.status = :status) AND " +
+			"(:categoryId IS NULL OR i.category.id = :categoryId) AND " +
+			"(:minPrice IS NULL OR i.price >= :minPrice) AND " +
+			"(:maxPrice IS NULL OR i.price <= :maxPrice) " +
+			"ORDER BY i.id DESC")
+	List<Item> searchForAdmin(@Param("q") String q,
+			@Param("status") String status,
+			@Param("categoryId") Long categoryId,
+			@Param("minPrice") BigDecimal minPrice,
+			@Param("maxPrice") BigDecimal maxPrice);
 }

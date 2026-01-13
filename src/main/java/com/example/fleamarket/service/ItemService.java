@@ -2,6 +2,7 @@
 package com.example.fleamarket.service;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -10,7 +11,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.fleamarket.entity.Item;
@@ -29,20 +29,11 @@ public class ItemService {
 		this.cloudinaryService = cloudinaryService;
 	}
 
-	public Page<Item> searchItems(String keyword, Long categoryId, int page, int size) {
+	public Page<Item> searchItems(String keyword, Long categoryId, BigDecimal minPrice, BigDecimal maxPrice, int page,
+			int size) {
 		Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
-		String status = "出品中";
-
-		if (keyword != null && !keyword.isEmpty() && categoryId != null) {
-			return itemRepository.findByNameContainingIgnoreCaseAndCategoryIdAndStatus(keyword, categoryId, status,
-					pageable);
-		} else if (keyword != null && !keyword.isEmpty()) {
-			return itemRepository.findByNameContainingIgnoreCaseAndStatus(keyword, status, pageable);
-		} else if (categoryId != null) {
-			return itemRepository.findByCategoryIdAndStatus(categoryId, status, pageable);
-		} else {
-			return itemRepository.findByStatus(status, pageable);
-		}
+		String q = (keyword != null && !keyword.trim().isEmpty()) ? keyword : null;
+		return itemRepository.searchForUser(q, categoryId, minPrice, maxPrice, pageable);
 	}
 
 	public List<Item> getAllItems() {
@@ -95,9 +86,10 @@ public class ItemService {
 		}
 	}
 
-	public List<Item> searchItemsForAdmin(String q, String status) {
-		String query = (StringUtils.hasText(q)) ? q : "";
-		String searchStatus = (StringUtils.hasText(status)) ? status : null;
-		return itemRepository.searchForAdmin(query, searchStatus);
+	public List<Item> searchItemsForAdmin(String q, String status, Long categoryId, BigDecimal minPrice,
+			BigDecimal maxPrice) {
+		String keyword = (q != null && !q.trim().isEmpty()) ? q : null;
+		String statusFilter = (status != null && !status.trim().isEmpty()) ? status : null;
+		return itemRepository.searchForAdmin(keyword, statusFilter, categoryId, minPrice, maxPrice);
 	}
 }
