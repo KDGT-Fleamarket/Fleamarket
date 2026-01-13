@@ -13,7 +13,6 @@ DROP TABLE IF EXISTS category CASCADE;
 DROP TABLE IF EXISTS user_complaint CASCADE;
 DROP TABLE IF EXISTS users CASCADE;
 DROP TABLE IF EXISTS terms CASCADE;
-DROP TYPE IF EXISTS report_tyoe CASCADE;
 
 -- =================================================
 -- 2. テーブル作成 (DDL)
@@ -65,7 +64,7 @@ CREATE TABLE app_order (
 	status VARCHAR(20) DEFAULT '購入済',
 	payment_intent_id VARCHAR(128),
 	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-	shipping_address VARCHAR(255), NOT NULL,
+	shipping_address VARCHAR(255) NOT NULL,
 	FOREIGN KEY (item_id) REFERENCES item(id),
 	FOREIGN KEY (buyer_id) REFERENCES users(id)
 );
@@ -138,6 +137,16 @@ CREATE TABLE login_logs (
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
+CREATE TABLE chat_room_status (
+    id SERIAL PRIMARY KEY,
+    user_id BIGINT NOT NULL,
+    item_id BIGINT NOT NULL,
+    last_viewed_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT unique_user_item UNIQUE (user_id, item_id),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (item_id) REFERENCES item(id) ON DELETE CASCADE
+);
+
 -- インデックス
 CREATE INDEX IF NOT EXISTS idx_users_banned ON users(banned);
 CREATE INDEX IF NOT EXISTS idx_users_banned_by ON users(banned_by_admin_id);
@@ -153,3 +162,5 @@ CREATE INDEX IF NOT EXISTS idx_fav_item_id ON favorite_item(item_id);
 CREATE INDEX IF NOT EXISTS idx_review_order_id ON review(order_id);
 CREATE INDEX IF NOT EXISTS idx_uc_reported ON user_complaint(reported_user_id);
 CREATE INDEX IF NOT EXISTS idx_uc_reporter ON user_complaint(reporter_user_id);
+CREATE INDEX IF NOT EXISTS idx_chat_room_status_user ON chat_room_status(user_id);
+CREATE INDEX IF NOT EXISTS idx_chat_room_status_item ON chat_room_status(item_id);

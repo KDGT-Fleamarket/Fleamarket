@@ -69,4 +69,8 @@ public class ChatService {
 	public List<Item> getUnreadItemsForUser(User user) {
 		return chatRepository.findItemsWithUnreadMessages(user);
 	}
+
+	public boolean hasChatHistory(Item item, User user) {
+		return chatRepository.existsByItemAndUserInvolvement(item, user);
+	}
 }

@@ -20,7 +20,7 @@
 		
 		<div class="search-area">
 		    <form th:action="@{/admin/items}" method="get" class="filter-form">
-		        <input type="text" name="q" th:value="${q}" placeholder="商品名で検索...">
+		        <input type="text" name="q" th:value="${q}" placeholder="商品名/説明で検索">
 		        
 		        <select name="status">
 		            <option value="">すべてのステータス</option>
@@ -28,6 +28,17 @@
 		            <option value="決済待ち" th:selected="${status == '決済待ち'}">決済待ち</option>
 		            <option value="売却済" th:selected="${status == '売却済'}">売却済</option>
 		        </select>
+				
+				<select name="categoryId">
+			        <option value="">すべてのカテゴリ</option>
+			        <option th:each="cat : ${categories}" th:value="${cat.id}" th:text="${cat.name}" th:selected="${cat.id == categoryId}"></option>
+			    </select>
+				
+				<div>
+					<input type="number" name="minPrice" th:value="${minPrice}" placeholder="最小価格">
+					<span>〜</span>
+					<input type="number" name="maxPrice" th:value="${maxPrice}" placeholder="最大価格">
+				</div>
 		        
 		        <button type="submit" class="button">検索</button>
 		        <a th:href="@{/admin/items}" class="button secondary">リセット</a>
