@@ -47,8 +47,9 @@
 				<!-- 価格ラベル -->
 				<label for="price">価格 (¥):</label>
 				<!-- 数値入力（小数 2 桁ステップ） -->
-				<input type="number" id="price" name="price" 
-					th:value="${item.price}" step="0.01" required>
+				<input type="number" id="price" name="price" pattern="\d*"
+					th:value="${item.price}" min="1" step="1" placeholder="例: 1000"
+					required oninput="this.value = this.value.replace(/[^0-9]/g, '');">
 			</p>
 			<!-- カテゴリの選択 -->
 			<p>
