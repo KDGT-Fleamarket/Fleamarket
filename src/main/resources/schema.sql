@@ -130,7 +130,7 @@ CREATE TABLE report(
 	FOREIGN KEY(reporter_id) REFERENCES users(id)
 );
 
-CREATE TABLE login_logs (
+CREATE TABLE login_log (
     id SERIAL PRIMARY KEY,
     user_id BIGINT NOT NULL,
     login_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
