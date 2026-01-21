@@ -1,19 +1,3 @@
-# Fleamarket
-# 大見出し（H1）
-## 中見出し（H2）
-### 小見出し（H3）
-**太字にしたいテキスト**      ← 太字
-*斜体にしたいテキスト*        ← 斜体
-**_太字+斜体_**               ← 太字＋斜体
-- 箇条書き1
-- 箇条書き2
-  - サブ項目
-1. 手順1
-2. 手順2
-```js
-console.log("Hello World")
-```
-
 # 🛒 Fleamarket
 
 Spring Boot と Thymeleaf を用いて開発した  
@@ -89,23 +73,154 @@ Web フリマアプリケーションです。
 ## 📁 ディレクトリ構成
 
 ```
-src/
-└─ main/
-├─ java/
-│ └─ com/example/fleamarket/
-│ ├─ FleamarketApplication.java
-│ ├─ controller/     # リクエスト制御
-│ ├─ service/        # ビジネスロジック
-│ ├─ repository/     # DBアクセス
-│ ├─ entity/         # エンティティ
-│ ├─ security/       # 認証・認可
-│ └─ config/         # 設定
-└─ resources/
-  ├─ templates/      # Thymeleaf
-  ├─ static/         # CSS / JavaScript
-  ├─ application.properties
-  ├─ schema.sql
-  └─ data.sql
+fleamarket
+├── .mvn
+├── .settings
+├── src
+│   └── main
+│       ├── java
+│       │   └── com
+│       │       └── example
+│       │           └── fleamarket
+│       │               ├── FleamarketApplication.java
+│       │               │
+│       │               ├── config
+│       │               │   ├── SecurityConfig.java
+│       │               │   ├── WebMvcConfig.java
+│       │               │   └── WebSocketConfig.java
+│       │               │
+│       │               ├── controller
+│       │               │   ├── AdminController.java
+│       │               │   ├── AdminItemController.java
+│       │               │   ├── AdminReportController.java
+│       │               │   ├── AdminReviewController.java
+│       │               │   ├── AdminTermsController.java
+│       │               │   ├── AdminUserController.java
+│       │               │   ├── AppOrderController.java
+│       │               │   ├── AuthController.java
+│       │               │   ├── ChatController.java
+│       │               │   ├── ChatMessage.java
+│       │               │   ├── DashboardController.java
+│       │               │   ├── HomeController.java
+│       │               │   ├── ItemController.java
+│       │               │   ├── ReportController.java
+│       │               │   ├── ReviewController.java
+│       │               │   ├── TermsController.java
+│       │               │   └── UserController.java
+│       │               │
+│       │               ├── entity
+│       │               │   ├── AppOrder.java
+│       │               │   ├── Category.java
+│       │               │   ├── Chat.java
+│       │               │   ├── ChatRoomStatus.java
+│       │               │   ├── FavoriteItem.java
+│       │               │   ├── Item.java
+│       │               │   ├── LoginLog.java
+│       │               │   ├── Report.java
+│       │               │   ├── Review.java
+│       │               │   ├── Terms.java
+│       │               │   ├── User.java
+│       │               │   └── UserComplaint.java
+│       │               │
+│       │               ├── repository
+│       │               │   ├── AppOrderRepository.java
+│       │               │   ├── CategoryRepository.java
+│       │               │   ├── ChatRepository.java
+│       │               │   ├── ChatRoomStatusRepository.java
+│       │               │   ├── FavoriteItemRepository.java
+│       │               │   ├── ItemRepository.java
+│       │               │   ├── LoginLogRepository.java
+│       │               │   ├── ReportRepository.java
+│       │               │   ├── ReviewRepository.java
+│       │               │   ├── TermsRepository.java
+│       │               │   ├── UserComplaintRepository.java
+│       │               │   └── UserRepository.java
+│       │               │
+│       │               ├── security
+│       │               │   ├── CustomAuthenticationSuccessHandler.java
+│       │               │   ├── CustomUserDetailsService.java
+│       │               │   └── TermsCheckInterceptor.java
+│       │               │
+│       │               └── service
+│       │                   ├── AdminUserService.java
+│       │                   ├── AppOrderService.java
+│       │                   ├── CategoryService.java
+│       │                   ├── ChatService.java
+│       │                   ├── CloudinaryService.java
+│       │                   ├── FavoriteService.java
+│       │                   ├── ItemService.java
+│       │                   ├── ReportService.java
+│       │                   ├── ReviewService.java
+│       │                   ├── StatisticsService.java
+│       │                   ├── StripeService.java
+│       │                   ├── TermsService.java
+│       │                   └── UserService.java
+│       │
+│       └── resources
+│           ├── static
+│           │   ├── css
+│           │   │   └── style.css
+│           │   └── images
+│           │       └── placeholder.png
+│           │
+│           └── templates
+│               ├── admin
+│               │   ├── items
+│               │   │   ├── detail.html
+│               │   │   └── list.html
+│               │   ├── reports
+│               │   │   ├── detail.html
+│               │   │   └── list.html
+│               │   ├── reviews
+│               │   │   ├── detail.html
+│               │   │   └── list.html
+│               │   ├── terms
+│               │   │   ├── create.html
+│               │   │   ├── detail.html
+│               │   │   └── list.html
+│               │   └── users
+│               │   │   ├── create.html
+│               │   │   ├── detail.html
+│               │   │   └── list.html
+│               │   │
+│               │   ├── dashboard.html
+│               │   └── statistics.html
+│               │
+│               ├── fragments
+│               │   └── layout.html
+│               │
+│               ├── user
+│               │   ├── favorites
+│               │   │   └── list.html
+│               │   ├── items
+│               │   │   ├── detail.html
+│               │   │   ├── form.html
+│               │   │   └── list.html
+│               │   ├── orders
+│               │   │   ├── detail.html
+│               │   │   └── list.html
+│               │   ├── reports
+│               │   │   ├── create.html
+│               │   │   ├── detail.html
+│               │   │   └── list.html
+│               │   ├── reviews
+│               │   │   ├── detail.html
+│               │   │   └── list.html
+│               │   ├── sales
+│               │   │   ├── detail.html
+│               │   │   └── list.html
+│               │   ├── selling
+│               │   │   └── list.html
+│               │   └── users
+│               │   │   ├── detail.html
+│               │   │   └── update.html
+│               │   │
+│               │   ├── my_page.html
+│               │   ├── payment_confirmation.html
+│               │   └── terms.html
+│               │
+│               ├── login.html
+│               └── register.html
 ```
 
 ---
