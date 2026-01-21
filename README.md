@@ -349,8 +349,6 @@ erDiagram
 
 ## 🗃 テーブル設計
 
----
-
 ### users（ユーザー）
 
 | カラム名 | 型 | 説明 |
@@ -371,16 +369,12 @@ erDiagram
 | banned_at | TIMESTAMP | BAN日時 |
 | banned_by_admin_id | INT | BANした管理者ID |
 
----
-
 ### category（カテゴリ）
 
 | カラム名 | 型 | 説明 |
 |--------|----|------|
 | id | SERIAL | カテゴリID（PK） |
 | name | VARCHAR(50) | カテゴリ名（ユニーク） |
-
----
 
 ### item（商品）
 
@@ -396,8 +390,6 @@ erDiagram
 | image_url | TEXT | 商品画像URL |
 | created_at | TIMESTAMP | 出品日時 |
 
----
-
 ### app_order（注文）
 
 | カラム名 | 型 | 説明 |
@@ -411,8 +403,6 @@ erDiagram
 | shipping_address | VARCHAR(255) | 配送先住所 |
 | created_at | TIMESTAMP | 注文日時 |
 
----
-
 ### chat（チャット）
 
 | カラム名 | 型 | 説明 |
@@ -423,8 +413,6 @@ erDiagram
 | message | TEXT | メッセージ内容 |
 | created_at | TIMESTAMP | 送信日時 |
 
----
-
 ### favorite_item（お気に入り）
 
 | カラム名 | 型 | 説明 |
@@ -433,8 +421,6 @@ erDiagram
 | user_id | INT | ユーザーID（FK） |
 | item_id | INT | 商品ID（FK） |
 | created_at | TIMESTAMP | 登録日時 |
-
----
 
 ### review（レビュー）
 
@@ -449,8 +435,6 @@ erDiagram
 | comment | TEXT | コメント |
 | created_at | TIMESTAMP | 投稿日時 |
 
----
-
 ### user_complaint（ユーザー通報）
 
 | カラム名 | 型 | 説明 |
@@ -461,8 +445,6 @@ erDiagram
 | reason | TEXT | 通報理由 |
 | created_at | TIMESTAMP | 通報日時 |
 
----
-
 ### terms（利用規約）
 
 | カラム名 | 型 | 説明 |
@@ -470,8 +452,6 @@ erDiagram
 | terms_version | SERIAL | 規約バージョン（PK） |
 | terms_content | TEXT | 規約内容 |
 | effective_date | DATE | 適用開始日 |
-
----
 
 ### report（お問い合わせ・通報）
 
@@ -484,8 +464,6 @@ erDiagram
 | status | VARCHAR(20) | 対応状況 |
 | created_at | TIMESTAMP | 作成日時 |
 
----
-
 ### login_log（ログイン履歴）
 
 | カラム名 | 型 | 説明 |
@@ -493,8 +471,6 @@ erDiagram
 | id | SERIAL | ログID（PK） |
 | user_id | BIGINT | ユーザーID |
 | login_at | TIMESTAMP | ログイン日時 |
-
----
 
 ### chat_room_status（チャット閲覧状態）
 
@@ -504,3 +480,101 @@ erDiagram
 | user_id | BIGINT | ユーザーID |
 | item_id | BIGINT | 商品ID |
 | last_viewed_at | TIMESTAMP | 最終閲覧日時 |
+
+---
+
+## 📡 API エンドポイント一覧
+
+本アプリケーションでは、**Thymeleaf による画面遷移**と  
+**Spring Boot（REST / WebSocket）API** を組み合わせて機能を提供しています。
+
+### 🔐 認証・初期設定
+
+| 機能 | HTTP | パス | 権限 | 説明 |
+|---|---|---|---|---|
+| ルート遷移 | GET | `/` | 共通 | 権限により `/admin/dashboard` または `/items` へ遷移 |
+| ログイン画面 | GET | `/login` | 共通 | 認証エラー時も同画面を表示 |
+| 会員登録画面 | GET | `/register` | 共通 | 新規ユーザー登録フォーム |
+| 会員登録実行 | POST | `/register` | 共通 | 登録後 `/login?registered` へ |
+| 利用規約同意画面 | GET | `/terms` | ユーザー | 未同意時に強制表示 |
+| 利用規約同意 | POST | `/terms/agree` | ユーザー | 同意日時を保存 |
+| 規約閲覧 | GET | `/terms/view` | 共通 | 閲覧専用 |
+
+### 🛒 商品管理（一般）
+
+| 機能 | HTTP | パス | 権限 | 説明 |
+|---|---|---|---|---|
+| 商品一覧・検索 | GET | `/items` | 認証済 | 検索・カテゴリ・ページング |
+| 商品詳細 | GET | `/items/{id}` | 認証済 | 詳細・チャット・お気に入り |
+| 商品出品画面 | GET | `/items/new` | ユーザー | 出品フォーム |
+| 商品出品 | POST | `/items` | ユーザー | 画像アップロード含む |
+| 商品編集画面 | GET | `/items/{id}/edit` | 出品者 | 本人のみ |
+| 商品更新 | POST | `/items/{id}` | 出品者 | 商品情報更新 |
+| 商品削除 | POST | `/items/{id}/delete` | 出品者 | 商品削除 |
+| お気に入り追加 | POST | `/items/{id}/favorite` | ユーザー | お気に入り登録 |
+| お気に入り解除 | POST | `/items/{id}/unfavorite` | ユーザー | お気に入り解除 |
+| 出品者詳細 | GET | `/items/users/detail/{id}` | 認証済 | 出品者情報・評価 |
+
+### 💳 取引・購入（Stripe）
+
+| 機能 | HTTP | パス | 権限 | 説明 |
+|---|---|---|---|---|
+| 購入開始 | POST | `/orders/initiate-purchase` | ユーザー | PaymentIntent 作成 |
+| 決済確認 | GET | `/orders/confirm-payment` | ユーザー | Stripe Elements |
+| 購入完了 | GET | `/orders/complete-purchase` | ユーザー | 注文確定 |
+| 発送通知 | POST | `/orders/{id}/ship` | 出品者 | 発送済みに更新 |
+| 配送先更新(API) | POST | `/orders/api/user/update-address` | ユーザー | 非同期更新 |
+
+### 💬 チャット（WebSocket）
+
+| 機能 | 種別 | パス | 権限 | 説明 |
+|---|---|---|---|---|
+| チャット画面 | GET | `/chat/{itemId}` | 認証済 | 商品別チャット |
+| メッセージ送信 | POST | `/chat/{itemId}` | 認証済 | 通常送信 |
+| メッセージ送受信 | WS | `/app/chat/{itemId}` | 認証済 | リアルタイム通信 |
+
+### ⭐ 評価・通報
+
+| 機能 | HTTP | パス | 権限 | 説明 |
+|---|---|---|---|---|
+| レビュー画面 | GET | `/reviews/new/{orderId}` | 購入者 | 評価入力 |
+| レビュー投稿 | POST | `/reviews` | 購入者 | 保存処理 |
+| 通報作成画面 | GET | `/reports/create` | ユーザー | 問合せ |
+| 通報作成 | POST | `/reports/create` | ユーザー | DB保存 |
+| 通報詳細 | GET | `/reports/detail/{id}` | 本人 | 運営回答 |
+| 通報完了 | POST | `/reports/{id}/complete` | ユーザー | クローズ |
+
+### 👤 マイページ
+
+| 機能 | HTTP | パス | 権限 | 説明 |
+|---|---|---|---|---|
+| マイページTOP | GET | `/my-page` | ユーザー | 通知・概要 |
+| プロフィール編集 | GET | `/my-page/profile/edit` | ユーザー | 編集画面 |
+| プロフィール更新 | POST | `/my-page/profile/update` | ユーザー | 再認証 |
+| 出品中一覧 | GET | `/my-page/selling` | ユーザー | 出品商品 |
+| 購入履歴 | GET | `/my-page/orders` | ユーザー | 購入一覧 |
+| 購入詳細 | GET | `/my-page/orders/detail/{id}` | 購入者 | 進捗確認 |
+| 販売履歴 | GET | `/my-page/sales` | ユーザー | 販売一覧 |
+| 販売詳細 | GET | `/my-page/sales/detail/{id}` | 出品者 | 発送管理 |
+| お気に入り | GET | `/my-page/favorites` | ユーザー | 一覧 |
+| 自分の評価 | GET | `/my-page/reviews` | ユーザー | 履歴 |
+| 自分の通報 | GET | `/my-page/reports` | ユーザー | 履歴 |
+
+### 🛠 管理者（Admin）
+
+| 機能 | HTTP | パス | 権限 | 説明 |
+|---|---|---|---|---|
+| ダッシュボード | GET | `/admin/dashboard` | 管理者 | 統計概要 |
+| 統計詳細 | GET | `/admin/statistics` | 管理者 | グラフ |
+| CSV出力 | GET | `/admin/statistics/csv` | 管理者 | DL |
+| 商品管理 | GET | `/admin/items` | 管理者 | 監視 |
+| 商品削除 | POST | `/admin/items/{id}/delete` | 管理者 | 強制削除 |
+| 通報管理 | GET | `/admin/reports` | 管理者 | 対応管理 |
+| 通報更新 | POST | `/admin/reports/update` | 管理者 | ステータス |
+| レビュー管理 | GET | `/admin/reviews` | 管理者 | 監視 |
+| 規約管理 | GET | `/admin/terms` | 管理者 | バージョン |
+| ユーザー管理 | GET | `/admin/users` | 管理者 | BAN管理 |
+| ユーザーBAN | POST | `/admin/users/{id}/ban` | 管理者 | 停止 |
+| BAN解除 | POST | `/admin/users/{id}/unban` | 管理者 | 解除 |
+| 管理者作成画面 | GET | `/admin/users/create` | 管理者 | 新規管理者アカウント作成画面 |
+| 管理者作成実行 | POST | `/admin/users/create` | 管理者 | 新規管理者の登録 |
