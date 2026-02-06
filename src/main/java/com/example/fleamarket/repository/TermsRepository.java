@@ -16,10 +16,10 @@ public interface TermsRepository extends JpaRepository<Terms, Long> {
 	// 施行日が現在時刻以前の中で、最も新しい（バージョンが大きい）規約を1件取得
 	Optional<Terms> findFirstByEffectiveDateLessThanEqualOrderByEffectiveDateDescTermsVersionDesc(LocalDate date);
 
-	// 全ての規約をバージョン降順で取得（管理画面の一覧用）
+	// 管理者：全ての規約をバージョン降順で取得
 	List<Terms> findAllByOrderByTermsVersionDesc();
 
-	// キーワード(terms_content) ＋ 施行日(指定日以前) で検索
+	// 管理者検索：キーワード(terms_content) ＋ 施行日(指定日以前) 
 	@Query("SELECT t FROM Terms t WHERE " +
 			"(lower(t.termsContent) LIKE lower(concat('%', :q, '%'))) " +
 			"AND (:hasDate = false OR t.effectiveDate <= :date) " +

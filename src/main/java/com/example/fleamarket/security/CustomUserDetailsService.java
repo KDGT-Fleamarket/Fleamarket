@@ -21,6 +21,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 		this.users = users;
 	}
 
+	// 入力されたメールアドレスからDBを検索し、アカウントの状態（凍結等）を確認して認証情報を生成する
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		User u = users.findByEmailIgnoreCase(username)

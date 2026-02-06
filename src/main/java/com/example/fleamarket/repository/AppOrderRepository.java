@@ -35,7 +35,7 @@ public interface AppOrderRepository extends JpaRepository<AppOrder, Long> {
 			"ORDER BY CAST(o.createdAt AS date) ASC")
 	List<Object[]> findDailySales(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 
-	// 集計用：カテゴリ
+	// 集計用：カテゴリ別売上金額
 	@Query("SELECT c.name, SUM(o.price) " +
 			"FROM AppOrder o " +
 			"JOIN o.item i " +

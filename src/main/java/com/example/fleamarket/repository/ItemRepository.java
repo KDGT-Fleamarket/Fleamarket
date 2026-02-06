@@ -28,13 +28,13 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
 	// 全件取得（ID降順）
 	List<Item> findAllByOrderByIdDesc();
 
-	// 集計用：出品数
+	// 集計用：日別出品数
 	@Query("SELECT CAST(i.createdAt AS date) as day, COUNT(i.id) " +
 			"FROM Item i WHERE i.createdAt BETWEEN :start AND :end " +
 			"GROUP BY CAST(i.createdAt AS date) ORDER BY day ASC")
 	List<Object[]> countDailyItems(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 
-	// 集計用：カテゴリ
+	// 集計用：カテゴリ別出品数
 	@Query("SELECT c.name, COUNT(i.id) " +
 			"FROM Item i " +
 			"JOIN i.category c " +

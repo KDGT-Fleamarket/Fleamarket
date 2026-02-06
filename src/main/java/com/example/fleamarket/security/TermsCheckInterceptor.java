@@ -6,7 +6,6 @@ import java.util.Set;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.AuthorityUtils;
@@ -21,11 +20,15 @@ import com.example.fleamarket.repository.UserRepository;
 
 @Component
 public class TermsCheckInterceptor implements HandlerInterceptor {
-	@Autowired
-	private UserRepository userRepository;
-	@Autowired
-	private TermsRepository termsRepository;
+	private final UserRepository userRepository;
+	private final TermsRepository termsRepository;
 
+	public TermsCheckInterceptor(UserRepository userRepository, TermsRepository termsRepository) {
+		this.userRepository = userRepository;
+		this.termsRepository = termsRepository;
+	}
+
+	// ページ遷移の前に、ログイン済みの一般ユーザーが最新の利用規約に同意しているかを判定する
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
 			throws Exception {

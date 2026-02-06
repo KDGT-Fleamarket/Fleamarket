@@ -12,13 +12,13 @@ import com.example.fleamarket.entity.User;
 
 @Repository
 public interface ReportRepository extends JpaRepository<Report, Long> {
-	// 【USER用】自分が投稿したものを新しい順に取得
+	// 一般用：自分が投稿したものを新しい順に取得
 	List<Report> findByReporterOrderByCreatedAtDesc(User reporter);
 
 	// 自分が報告したレポートの中で、特定のステータスのものを取得
 	List<Report> findByReporterAndStatus(User reporter, String status);
 
-	// 【ADMIN用】全ての報告を新しい順に取得
+	// 管理者用：全ての報告を新しい順に取得
 	@Query("""
 			    SELECT r FROM Report r
 			    JOIN FETCH r.reporter
@@ -26,7 +26,7 @@ public interface ReportRepository extends JpaRepository<Report, Long> {
 			""")
 	List<Report> findAllWithReporterOrderByCreatedAtDesc();
 
-	// キーワード(message) ＋ タイプ ＋ ステータス で検索
+	// 管理者検索用：キーワード(message) ＋ タイプ ＋ ステータス
 	@Query("SELECT r FROM Report r WHERE " +
 			"(lower(r.message) LIKE lower(concat('%', :q, '%'))) " +
 			"AND (:hasType = false OR r.reportType = :type) " +

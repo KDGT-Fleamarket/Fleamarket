@@ -29,6 +29,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
 		this.userRepository = userRepository;
 	}
 
+	// ログイン成功時に、最終ログイン日時の記録と権限（管理者/一般）に応じた画面遷移を行う
 	@Override
 	@Transactional
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
