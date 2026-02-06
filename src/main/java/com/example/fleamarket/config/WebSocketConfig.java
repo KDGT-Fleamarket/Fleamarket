@@ -10,17 +10,16 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
+	// メッセージの送り先（/app）と受け取り場所（/topic）のルートを定義
 	@Override
 	public void configureMessageBroker(MessageBrokerRegistry config) {
-		// メッセージを受け取るためのプレフィックス（サーバーからクライアントへ）
 		config.enableSimpleBroker("/topic");
-		// クライアントからメッセージを送信する際の宛先プレフィックス
 		config.setApplicationDestinationPrefixes("/app");
 	}
 
+	// WebSocket接続を開始するためのエンドポイント（URL）を登録
 	@Override
 	public void registerStompEndpoints(StompEndpointRegistry registry) {
-		// WebSocketの接続先URLを設定
 		registry.addEndpoint("/ws-chat").withSockJS();
 	}
 }

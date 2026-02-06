@@ -23,12 +23,14 @@ public class SecurityConfig {
 		this.successHandler = successHandler;
 	}
 
+	// パスワードをハッシュ化（BCrypt形式）するためのエンコーダーを定義
 	@Bean
 	public PasswordEncoder passwordEncoder() {
 		// bcrypt
 		return new org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder();
 	}
 
+	// URLごとのアクセス権限（認可）やログイン動作の詳細を設定
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http

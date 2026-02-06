@@ -29,7 +29,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 			""", nativeQuery = true)
 	Double averageRatingForUser(@Param("userId") Long userId);
 
-	// 検索用 キーワード(name or email) + ロール + BAN状態 で検索
+	// 検索用：キーワード(name or email) + ロール + BAN状態 で検索
 	@Query("SELECT u FROM User u WHERE " +
 			"(lower(u.name) LIKE lower(concat('%', :q, '%')) OR lower(u.email) LIKE lower(concat('%', :q, '%'))) " +
 			"AND (:role IS NULL OR u.role = :role) " +
@@ -39,7 +39,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
 	List<User> findAllByOrderByIdDesc();
 
-	// 集計用
+	// 集計用：日別新規登録者数
 	@Query("SELECT CAST(u.createdAt AS date) as day, COUNT(u.id) " +
 			"FROM User u WHERE u.createdAt BETWEEN :start AND :end " +
 			"GROUP BY CAST(u.createdAt AS date) ORDER BY day ASC")
