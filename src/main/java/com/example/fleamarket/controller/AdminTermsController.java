@@ -1,7 +1,9 @@
 //追加クラス
 package com.example.fleamarket.controller;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -59,7 +61,14 @@ public class AdminTermsController {
 		Terms terms = termsRepository.findById(termsVersion)
 				.orElseThrow(() -> new IllegalArgumentException("Invalid terms Version:" + termsVersion));
 
+		Optional<Terms> currentTerms = termsRepository
+				.findFirstByEffectiveDateLessThanEqualOrderByEffectiveDateDescTermsVersionDesc(LocalDate.now());
+
+		boolean isCurrent = currentTerms.isPresent()
+				&& currentTerms.get().getTermsVersion().equals(terms.getTermsVersion());
+
 		model.addAttribute("terms", terms);
+		model.addAttribute("isCurrent", isCurrent);
 		return "admin/terms/detail";
 	}
 }
