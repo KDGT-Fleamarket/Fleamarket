@@ -51,7 +51,7 @@ public class AdminTermsController {
 	@PostMapping("/create")
 	public String createTerms(@ModelAttribute Terms terms) {
 		termsRepository.save(terms);
-		return "redirect:/admin/terms/list?success";
+		return "redirect:/admin/terms?success";
 	}
 
 	@GetMapping("/detail/{termsVersion}")

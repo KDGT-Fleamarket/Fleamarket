@@ -37,25 +37,27 @@
 					<th>操作</th>
                 </tr>
             </thead>
-            <tbody>
-                <tr th:each="t : ${terms}">
-                    <td th:text="${t.termsVersion}"></td>
-                    <td th:text="${t.effectiveDate}"></td>
-                    <td th:text="${#strings.abbreviate(t.termsContent, 50)}"></td>
-                    <td>
-                        <span th:if="${t.effectiveDate.isBefore(T(java.time.LocalDate).now()) || t.effectiveDate.isEqual(T(java.time.LocalDate).now())}" 
-                              style="color: green; font-weight: bold;">施行中</span>
-                        <span th:if="${t.effectiveDate.isAfter(T(java.time.LocalDate).now())}" 
-                              style="color: blue;">予約中</span>
-                    </td>
-					<td>
-                        <a th:href="@{/admin/terms/detail/{id}(id=${t.termsVersion})}" class="button small">詳細</a>
-                    </td>
-                </tr>
-				<tr th:if="${#lists.isEmpty(terms)}">
-					<td colspan="5">規約がありません。</td>
-				</tr>
-            </tbody>
+			<tbody>
+			    <tr th:each="t, iterStat : ${terms}">
+			        <td th:text="${t.termsVersion}"></td>
+			        <td th:text="${t.effectiveDate}"></td>
+			        <td th:text="${#strings.abbreviate(t.termsContent, 50)}"></td>
+			        <td>
+			            <span th:if="${iterStat.first and (t.effectiveDate.isBefore(T(java.time.LocalDate).now()) || t.effectiveDate.isEqual(T(java.time.LocalDate).now()))}" 
+			                  style="color: green; font-weight: bold;">施行中</span>
+			            <span th:if="${!iterStat.first and (t.effectiveDate.isBefore(T(java.time.LocalDate).now()) || t.effectiveDate.isEqual(T(java.time.LocalDate).now()))}" 
+			                  style="color: gray;">過去の規約</span>
+			            <span th:if="${t.effectiveDate.isAfter(T(java.time.LocalDate).now())}" 
+			                  style="color: blue;">予約中</span>
+			        </td>
+			        <td>
+			            <a th:href="@{/admin/terms/detail/{id}(id=${t.termsVersion})}" class="button small">詳細</a>
+			        </td>
+			    </tr>
+			    <tr th:if="${#lists.isEmpty(terms)}">
+			        <td colspan="5">規約がありません。</td>
+			    </tr>
+			</tbody>
         </table>
     </div>
 </body>
